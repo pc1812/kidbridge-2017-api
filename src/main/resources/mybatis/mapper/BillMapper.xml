@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.$51zhiyuan.development.kidbridge.dao.bill">
+
+    <resultMap id="simpleResultMap" type="Bill">
+        <result property="option" column="option" typeHandler="net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler" />
+    </resultMap>
+
+    <sql id="base">
+        `bill`.`id`,
+        `bill`.`user_id` AS `user.id`,
+        `bill`.`fee`,
+        `bill`.`option`,
+        `bill`.`target`
+        `bill`.`bill_type`,
+        `bill`.`fee_type`,
+        `bill`.`del_flag`,
+        `bill`.`create_time`,
+        `bill`.`update_time`
+    </sql>
+
+    <!--费用列表-->
+    <select id="list" resultType="Bill">
+        SELECT
+            `bill`.`fee`,
+            `bill`.`bill_type`,
+            `bill`.`create_time`
+        FROM
+            `t_bill` AS `bill`
+        WHERE
+            `bill`.`del_flag` = FALSE
+            <if test="user != null and user.id != null">
+                AND `bill`.`user_id` = #{user.id}
+            </if>
+            <if test="billType != null">
+                AND `bill`.`bill_type` = #{billType}
+            </if>
+            <if test="feeType != null">
+                AND `bill`.`fee_type` = #{feeType}
+            </if>
+        ORDER BY
+            `bill`.`create_time` DESC
+    </select>
+
+    <!--费用统计-->
+    <select id="sum" resultType="java.math.BigDecimal">
+        SELECT
+            IFNULL(SUM(`bill`.`fee`),0)
+        FROM
+            `t_bill` AS `bill`
+        WHERE
+            `bill`.`del_flag` = FALSE
+            <if test="user != null and user.id != null">
+                AND `bill`.`user_id` = #{user.id}
+            </if>
+            <if test="billType != null">
+                AND `bill`.`bill_type` = #{billType}
+            </if>
+            <if test="feeType != null">
+                AND `bill`.`fee_type` = #{feeType}
+            </if>
+        ORDER BY
+            `bill`.`create_time` DESC
+    </select>
+
+    <!--费用明细新增-->
+    <insert id="add">
+        INSERT INTO `t_bill`(
+            `user_id`,
+            `fee`,
+            `option`,
+            `bill_type`,
+            `fee_type`
+        )VALUES(
+            #{user.id},
+            #{fee},
+            #{option,typeHandler=net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler},
+            #{billType},
+            #{feeType}
+        )
+
+    </insert>
+
+</mapper>

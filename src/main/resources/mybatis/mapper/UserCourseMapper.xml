@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.$51zhiyuan.development.kidbridge.dao.userCourse">
+
+    <!--用户解锁课程信息-->
+    <select id="get" resultType="UserCourse">
+        SELECT
+            `userCourse`.`id`,
+            `userCourse`.`user_id` AS `user.id`,
+            `userCourse`.`course_id` AS `course.id`,
+            `userCourse`.`del_flag`,
+            `userCourse`.`create_time`,
+            `userCourse`.`update_time`
+        FROM
+            `t_user_course` AS `userCourse`
+        WHERE
+            `userCourse`.`del_flag` = FALSE
+            <if test="id != null">
+                AND `userCourse`.`id` = #{id}
+            </if>
+            <if test="user != null and user.id != null">
+                AND userCourse.user_id = #{user.id}
+            </if>
+            <if test="course != null and course.id != null">
+                AND userCourse.course_id = #{course.id}
+            </if>
+        ORDER BY
+            `userCourse`.`create_time` DESC
+    </select>
+
+    <!--用户已解锁的课程列表-->
+    <select id="userCourse" resultMap="net.$51zhiyuan.development.kidbridge.dao.course.simpleResultMap">
+        SELECT
+            `course`.`id`,
+            `course`.`name`,
+            `course`.`icon`,
+            `course`.`tag`,
+            `course`.`fit`,
+            `course`.`price`,
+            (SELECT COUNT(*) FROM `t_user_course` AS `userCourse` WHERE `userCourse`.`del_flag` = FALSE AND `userCourse`.`course_id` = `course`.`id`) AS `enter`,
+            `course`.`limit`,
+            (SELECT SUM(`cycle`) FROM `t_course_detail` AS `courseDetail` WHERE `courseDetail`.`del_flag` = FALSE AND `courseDetail`.`course_id` = `course`.`id`) AS `cycle`,
+            (IF((NOW() >= `course`.`start_time`),IF((DATE_ADD(`course`.`start_time`,INTERVAL (SELECT SUM(`cycle`) FROM `t_course_detail` AS `courseDetail` WHERE `courseDetail`.`del_flag` = FALSE AND `courseDetail`.`course_id` = `course`.`id`) DAY) >= NOW()),1,2),0)) AS `status`
+        FROM
+            `t_course` AS `course`
+        WHERE
+            `course`.`del_flag` = FALSE
+			AND `course`.`id` IN (SELECT `userCourse`.`course_id` FROM `t_user_course` AS `userCourse` WHERE `userCourse`.`del_flag` = FALSE AND `userCourse`.`user_id` = #{user.id})
+			<if test="course.status != null">
+                AND (IF((NOW() >= `course`.`start_time`),IF((DATE_ADD(`course`.`start_time`,INTERVAL (SELECT SUM(`cycle`) FROM `t_course_detail` AS `courseDetail` WHERE `courseDetail`.`del_flag` = FALSE AND `courseDetail`.`course_id` = `course`.`id`) DAY) >= NOW()),1,2),0)) = #{course.status}
+            </if>
+        ORDER BY
+            `course`.`create_time` DESC
+    </select>
+
+    <!--新增解锁信息-->
+    <insert id="add">
+        INSERT INTO `t_user_course`(
+            `user_id`,
+            `course_id`
+        )VALUES(
+            #{user.id},
+            #{course.id}
+        )
+    </insert>
+
+    <!--用户是否已解锁了某个绘本-->
+    <select id="exist" resultType="java.lang.Integer">
+        SELECT
+            COUNT(*)
+        FROM
+            `t_user_course` AS `userCourse`
+        WHERE
+            `userCourse`.`del_flag` = FALSE AND `userCourse`.`user_id` = #{user.id} AND `userCourse`.`course_id` = #{course.id}
+        ORDER BY
+            `userCourse`.`create_time` DESC
+    </select>
+
+</mapper>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.$51zhiyuan.development.kidbridge.dao.teacher">
+
+    <!--获取教师信息-->
+    <select id="get" resultType="Teacher">
+        SELECT
+            `teacher`.`id`,
+            `teacher`.`user_id` AS `user.id`,
+            `teacher`.`realname`,
+            `teacher`.`del_flag`,
+            `teacher`.`create_time`,
+            `teacher`.`update_time`
+        FROM
+            `t_teacher` AS `teacher`
+        WHERE
+            `teacher`.`del_flag` = FALSE
+            <if test="id != null">
+                AND `teacher`.`id` = #{id}
+            </if>
+            <if test="user != null and user.id != null">
+                AND `teacher`.`user_id` = #{user.id}
+            </if>
+        ORDER BY
+            `teacher`.`create_time` DESC
+    </select>
+
+    <!--获取教师的课程信息-->
+    <select id="course" parameterType="java.util.HashMap" resultMap="net.$51zhiyuan.development.kidbridge.dao.course.simpleResultMap">
+        SELECT
+            `course`.`id`,
+            `course`.`name`,
+            `course`.`icon`,
+            `course`.`tag`,
+            `course`.`fit`,
+            `course`.`price`,
+            (SELECT COUNT(*) FROM `t_user_course` AS `userCourse` WHERE `userCourse`.`del_flag` = FALSE AND `userCourse`.`course_id` = `course`.`id`) AS `enter`,
+            `course`.`limit`,
+            (SELECT SUM(`cycle`) FROM `t_course_detail` AS `courseDetail` WHERE `courseDetail`.`del_flag` = FALSE AND `courseDetail`.`course_id` = `course`.`id`) AS `cycle`,
+            (IF((NOW() >= `course`.`start_time`),IF((DATE_ADD(`course`.`start_time`,INTERVAL (SELECT SUM(`cycle`) FROM `t_course_detail` AS `courseDetail` WHERE `courseDetail`.`del_flag` = FALSE AND `courseDetail`.`course_id` = `course`.`id`) DAY) >= NOW()),1,2),0)) AS `status`
+            FROM
+            `t_course` AS `course`
+        WHERE
+            `course`.`del_flag` = FALSE
+            AND `course`.`teacher_id` = (SELECT `teacher`.`id` FROM `t_teacher` AS `teacher` WHERE `teacher`.`del_flag` = FALSE AND `teacher`.`user_id` = #{userId})
+            <if test="status != null">
+                AND (IF((NOW() >= `course`.`start_time`),IF((DATE_ADD(`course`.`start_time`,INTERVAL (SELECT SUM(`cycle`) FROM `t_course_detail` AS `courseDetail` WHERE `courseDetail`.`course_id` = `course`.`id`) DAY) >= NOW()),1,2),0)) = #{status}
+            </if>
+        ORDER BY
+            `course`.`create_time` DESC
+    </select>
+
+</mapper>

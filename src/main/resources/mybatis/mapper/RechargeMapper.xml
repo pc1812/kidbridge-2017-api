@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.$51zhiyuan.development.kidbridge.dao.recharge">
+
+
+    <!--新增充值记录-->
+    <insert id="add">
+        INSERT INTO `t_recharge`(
+            `id`,
+            `user_id`,
+            `fee`,
+            `fee_type`,
+            `status`,
+            `method`
+        )VALUES(
+            #{id},
+            #{user.id},
+            #{fee},
+            #{feeType},
+            #{status},
+            #{method}
+        )
+    </insert>
+
+    <!--获取充值记录-->
+    <select id="get" parameterType="java.lang.String" resultType="Recharge">
+        SELECT
+            `recharge`.`id`,
+            `recharge`.`user_id` AS `user.id`,
+            `recharge`.`fee`,
+            `recharge`.`fee_type`,
+            `recharge`.`status`,
+            `recharge`.`del_flag`,
+            `recharge`.`create_time`,
+            `recharge`.`update_time`
+        FROM
+            `t_recharge` AS `recharge`
+        WHERE
+            `recharge`.`del_flag` = FALSE
+            AND `recharge`.`id` = #{_parameter}
+        ORDER BY
+            `recharge`.`create_time` DESC
+    </select>
+
+    <!--更新充值记录信息-->
+    <update id="update">
+        UPDATE `t_recharge`
+        <set>
+            <if test="user != null and user.id != null">
+                `user_id` = #{user.id},
+            </if>
+            <if test="fee != null">
+                `fee` = #{fee},
+            </if>
+            <if test="feeType != null">
+                `fee_type` = #{feeType},
+            </if>
+            <if test="status != null">
+                `status` = #{status},
+            </if>
+            <if test="delFlag != null">
+                `del_flag` = #{delFlag},
+            </if>
+        </set>
+        WHERE `id` = #{id}
+
+    </update>
+
+
+</mapper>

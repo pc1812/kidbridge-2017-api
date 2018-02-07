@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:cache="http://www.springframework.org/schema/cache"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+						   http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+						   http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+						   http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+                           http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd
+                           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+
+    <!--注解驱动-->
+    <mvc:annotation-driven>
+        <!--完全路径匹配模式-->
+        <mvc:path-matching suffix-pattern="false"/>
+    </mvc:annotation-driven>
+    <!--特定的静态资源交给容器处理-->
+    <mvc:default-servlet-handler/>
+    <!--缓存驱动-->
+    <cache:annotation-driven cache-manager="cacheManager"/>
+    <!--事务驱动-->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+    <!--包托管路径-->
+    <context:component-scan base-package="net.$51zhiyuan.development.kidbridge.listener,net.$51zhiyuan.development.kidbridge.service,net.$51zhiyuan.development.kidbridge.ui.controller,net.$51zhiyuan.development.kidbridge.module,net.$51zhiyuan.development.kidbridge.module.*"/>
+
+    <!--拦截器-->
+    <mvc:interceptors>
+        <!--不缓存数据-->
+        <bean id="webContentInterceptor" class="org.springframework.web.servlet.mvc.WebContentInterceptor">
+            <property name="cacheSeconds" value="0"/>
+            <property name="useExpiresHeader" value="true"/>
+            <property name="useCacheControlHeader" value="true"/>
+            <property name="useCacheControlNoStore" value="true"/>
+        </bean>
+        <!--默认拦截器实现-->
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <bean class="net.$51zhiyuan.development.kidbridge.interceptor.DefaultInterceptor"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
+
+    <!--异常统一处理切面-->
+    <aop:config>
+        <aop:aspect id="exceptionHandlerAspect" ref="exceptionHandler">
+            <aop:pointcut id="exceptionHandlerPointcut" expression="execution(* net.$51zhiyuan.development.kidbridge.ui.controller..*.*(..))" />
+            <aop:after-throwing method="doAfterThrowing" pointcut-ref="exceptionHandlerPointcut" throwing="e" />
+        </aop:aspect>
+    </aop:config>
+
+    <!--异常统一处理实现类-->
+    <bean id="exceptionHandler" class="net.$51zhiyuan.development.kidbridge.exception.KidbridgeExceptionHandler" />
+
+    <!--redis-->
+    <bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+        <property name="maxTotal" value="10" />
+        <property name="maxIdle" value="10" />
+        <property name="minIdle" value="2" />
+        <property name="maxWaitMillis" value="15000" />
+        <property name="minEvictableIdleTimeMillis" value="300000" />
+        <property name="numTestsPerEvictionRun" value="3" />
+        <property name="timeBetweenEvictionRunsMillis" value="60000" />
+        <property name="testOnBorrow" value="true" />
+        <property name="testOnReturn" value="true" />
+        <property name="testWhileIdle" value="true" />
+    </bean>
+
+    <!--redis-->
+    <bean id="jedisConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory" destroy-method="destroy">
+        <property name="hostName" value="${kidbridge.redis.hostName}" />
+        <property name="port" value="${kidbridge.redis.port}" />
+        <property name="timeout" value="${kidbridge.redis.timeout}" />
+        <property name="database" value="${kidbridge.redis.database}" />
+        <property name="password" value="${kidbridge.redis.password}" />
+        <property name="usePool" value="${kidbridge.redis.usePool}" />
+        <property name="poolConfig" ref="jedisPoolConfig" />
+    </bean>
+
+    <bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate">
+        <property name="connectionFactory" ref="jedisConnectionFactory" />
+        <property name="keySerializer">
+            <bean class="org.springframework.data.redis.serializer.StringRedisSerializer" />
+        </property>
+        <property name="hashKeySerializer">
+            <bean class="org.springframework.data.redis.serializer.StringRedisSerializer" />
+        </property>
+        <property name="valueSerializer">
+            <bean class="org.springframework.data.redis.serializer.JdkSerializationRedisSerializer" />
+        </property>
+        <property name="hashValueSerializer">
+            <bean class="org.springframework.data.redis.serializer.JdkSerializationRedisSerializer" />
+        </property>
+    </bean>
+
+    <bean id="cacheManager" class="org.springframework.data.redis.cache.RedisCacheManager">
+        <constructor-arg ref="redisTemplate" />
+        <property name="defaultExpiration" value="0" />
+    </bean>
+
+    <bean id="cacheManagerShiro" class="org.apache.shiro.cache.MemoryConstrainedCacheManager"/>
+
+    <bean id="authorizingRealmService" class="net.$51zhiyuan.development.kidbridge.module.shiro.KidbridgeAuthorizingRealm"/>
+
+    <bean id="sessionDAO" class="net.$51zhiyuan.development.kidbridge.module.shiro.KidbridgeSessionDAO">
+        <property name="redisTemplate" ref="redisTemplate" />
+    </bean>
+    <bean id="sessionManager" class="net.$51zhiyuan.development.kidbridge.module.shiro.KidbridgeSessionManager">
+        <property name="sessionDAO" ref="sessionDAO"/>
+        <property name="globalSessionTimeout" value="${kidbridge.session.timeout}"/>
+    </bean>
+
+    <bean id="kidbridgeSubjectDAO" class="net.$51zhiyuan.development.kidbridge.module.shiro.KidbridgeSubjectDAO" />
+
+    <bean id="securityManager" class="net.$51zhiyuan.development.kidbridge.module.shiro.KidbridgeSecurityManager">
+        <property name="realm" ref="authorizingRealmService"/>
+        <property name="cacheManager" ref="cacheManagerShiro"/>
+        <property name="sessionManager" ref="sessionManager"/>
+        <property name="SubjectDAO" ref="kidbridgeSubjectDAO" />
+    </bean>
+
+    <!--shiro扩展实现-->
+    <bean id="pictureBookAuthenticationFilter" class="net.$51zhiyuan.development.kidbridge.module.shiro.KidbridgeAuthenticationFilter" />
+    <bean id="pictureBookPermissionsAuthorizationFilter" class="net.$51zhiyuan.development.kidbridge.module.shiro.KidbridgePermissionsAuthorizationFilter" />
+    <bean id="pictureBookRolesAuthorizationFilter" class="net.$51zhiyuan.development.kidbridge.module.shiro.KidbridgeRolesAuthorizationFilter" />
+
+    <!--shiro权限管理配置-->
+    <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+        <property name="securityManager" ref="securityManager"/>
+        <property name="filterChainDefinitions" value="${kidbridge.shiro.filterChainDefinitions}"/>
+        <property name="filters">
+            <map>
+                <entry key="authc" value-ref="pictureBookAuthenticationFilter" />
+                <entry key="perms" value-ref="pictureBookPermissionsAuthorizationFilter" />
+                <entry key="roles" value-ref="pictureBookRolesAuthorizationFilter" />
+            </map>
+        </property>
+    </bean>
+
+    <!--注入系统配置文件-->
+    <bean id="propertiesFactoryBean" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+        <property name="locations">
+            <list>
+                <value>classpath:config/global.properties</value>
+            </list>
+        </property>
+        <property name="fileEncoding" value="UTF-8"/>
+    </bean>
+
+    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="properties" ref="propertiesFactoryBean"/>
+    </bean>
+
+    <!--dbcp数据源配置-->
+    <bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource">
+        <property name="username" value="${kidbridge.dbcp.username}"/>
+        <property name="password" value="${kidbridge.dbcp.password}"/>
+        <property name="url" value="${kidbridge.dbcp.url}"/>
+        <property name="driverClassName" value="${kidbridge.dbcp.driverClassName}"/>
+        <property name="validationQuery" value="${kidbridge.dbcp.validationQuery}"/>
+        <property name="testOnBorrow" value="${kidbridge.dbcp.testOnBorrow}"/>
+        <property name="testOnReturn" value="${kidbridge.dbcp.testOnReturn}"/>
+        <property name="testWhileIdle" value="${kidbridge.dbcp.testWhileIdle}"/>
+    </bean>
+
+    <!--事务驱动实现-->
+    <bean name="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <!--spring mybatis整合-->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="configLocation" value="classpath:mybatis/mybatis-config.xml"/>
+    </bean>
+
+    <!--spring mybatis整合-->
+    <bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+        <constructor-arg ref="sqlSessionFactory"/>
+    </bean>
+
+
+</beans>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.$51zhiyuan.development.kidbridge.dao.feedback">
+
+    <select id="get" resultType="Feedback">
+
+    </select>
+
+    <!--新增意见反馈-->
+    <insert id="add">
+        INSERT INTO `t_feedback`(
+            `user_id`,
+            `content`
+        )VALUES(
+            #{user.id},
+            #{content}
+        )
+    </insert>
+
+</mapper>

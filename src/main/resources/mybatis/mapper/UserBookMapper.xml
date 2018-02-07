@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.$51zhiyuan.development.kidbridge.dao.userBook">
+
+
+    <!--新增绘本解锁信息-->
+    <insert id="add">
+        INSERT INTO `t_user_book`(
+            `user_id`,
+            `book_id`,
+            `free`
+        )VALUES(
+            #{user.id},
+            #{book.id},
+            #{free}
+        )
+    </insert>
+
+    <!--获取解锁信息-->
+    <select id="get" resultType="UserBook">
+        SELECT
+            `userBook`.`id`,
+            `userBook`.`user_id` AS `user.id`,
+            `userBook`.`book_id` AS `book.id`,
+            `userBook`.`del_flag`,
+            `userBook`.`create_time`,
+            `userBook`.`update_time`
+        FROM
+            `t_user_book` AS `userBook`
+        WHERE
+            `userBook`.`del_flag` = FALSE
+            <if test="id != null">
+                AND `userBook`.`id` = #{id}
+            </if>
+            <if test="user != null and user.id != null">
+                AND `userBook`.`user_id` = #{user.id}
+            </if>
+            <if test="book != null and book.id != null">
+                AND `userBook`.`book_id` = #{book.id}
+            </if>
+        ORDER BY
+            `userBook`.`create_time` DESC
+    </select>
+
+    <!--用户是否已解锁某个绘本-->
+    <select id="exist" resultType="java.lang.Integer">
+        SELECT
+            COUNT(*)
+        FROM
+            `t_user_book` AS `userBook`
+        WHERE
+            `userBook`.`del_flag` = FALSE AND `userBook`.`user_id` = #{user.id} AND `userBook`.`book_id` = #{book.id}
+        ORDER BY
+            `userBook`.`create_time` DESC
+    </select>
+
+    <!--用户已解锁的绘本列表-->
+    <select id="userBook" resultMap="net.$51zhiyuan.development.kidbridge.dao.book.simpleResultMap">
+        SELECT
+            `book`.`id`,
+            `book`.`name`,
+            `book`.`icon`,
+            `book`.`price`,
+            `book`.`fit`,
+            `book`.`tag`
+        FROM
+            `t_book` AS `book`
+        WHERE
+            `book`.`del_flag` = FALSE
+            AND `book`.`id` IN ( SELECT `userBook`.`book_id` FROM `t_user_book` AS `userBook` WHERE `userBook`.`del_flag` = FALSE AND `userBook`.`user_id` = #{user.id} AND `userBook`.`free` = #{free} )
+        ORDER BY
+            `book`.`create_time` DESC
+</select>
+
+
+</mapper>

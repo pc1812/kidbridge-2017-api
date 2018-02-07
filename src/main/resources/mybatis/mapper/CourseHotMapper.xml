@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.$51zhiyuan.development.kidbridge.dao.courseHot">
+
+    <select id="get" resultType="CourseHot">
+
+    </select>
+
+    <!--热门课程-->
+    <select id="hot" resultMap="net.$51zhiyuan.development.kidbridge.dao.course.simpleResultMap">
+        SELECT
+            `course`.`id`,
+            `course`.`name`,
+            `course`.`icon`,
+            `course`.`tag`,
+            `course`.`fit`,
+            `course`.`price`,
+            (SELECT COUNT(*) FROM `t_user_course` AS `userCourse` WHERE `userCourse`.`del_flag` = FALSE AND `userCourse`.`course_id` = `course`.`id`) AS `enter`,
+            `course`.`limit`,
+            (SELECT SUM(`cycle`) FROM `t_course_detail` AS `courseDetail` WHERE `courseDetail`.`del_flag` = FALSE AND `courseDetail`.`course_id` = `course`.`id`) AS `cycle`,
+            (IF((NOW() >= `course`.`start_time`),IF((DATE_ADD(`course`.`start_time`,INTERVAL (SELECT SUM(`cycle`) FROM `t_course_detail` AS `courseDetail` WHERE `courseDetail`.`del_flag` = FALSE AND `courseDetail`.`course_id` = `course`.`id`) DAY) >= NOW()),1,2),0)) AS `status`
+        FROM
+            `t_course` AS `course`
+        WHERE
+            `course`.`del_flag` = FALSE AND `course`.`id` IN (SELECT `courseHot`.`course_id` FROM `t_course_hot` AS `courseHot` WHERE `courseHot`.`del_flag` = FALSE)
+        ORDER BY
+            `course`.`create_time` DESC
+    </select>
+
+</mapper>

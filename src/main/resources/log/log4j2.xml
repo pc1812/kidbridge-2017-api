@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn" name="spring">
+    <Appenders>
+        <RollingFile name="DEBUG_FILE" fileName="${web:rootDir}/logs/debug/logger.log"
+                     filePattern="${web:rootDir}/logs/debug/debug-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="[ kidbridge ]  %-5p  %d{yyyy-MM-dd HH:mm:ss:SSS}  Message: %m  Location: %l %n%n"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+        </RollingFile>
+        <RollingFile name="ERROR_FILE" fileName="${web:rootDir}/logs/error/logger.log"
+                     filePattern="${web:rootDir}/logs/debug/debug-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="[ kidbridge ]  %-5p  %d{yyyy-MM-dd HH:mm:ss:SSS}  Message: %m  Location: %l %n%n"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+        </RollingFile>
+        <Console name="CONSOLE" target="SYSTEM_ERR">
+            <PatternLayout pattern="[ kidbridge ]  %-5p  %d{yyyy-MM-dd HH:mm:ss:SSS}  Message: %m  Location: %l %n%n"/>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Root level="ALL"/>
+        <Logger name="net.$51zhiyuan.development.kidbridge" level="DEBUG">
+            <AppenderRef ref="CONSOLE"/>
+        </Logger>
+<!--        <Logger name="net.$51zhiyuan.development.kidbridge" level="ERROR">
+            <AppenderRef ref="ERROR_FILE"/>
+        </Logger>-->
+        <Logger name="org.springframework" level="ERROR">
+            <AppenderRef ref="CONSOLE"/>
+        </Logger>
+    </Loggers>
+</Configuration>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.$51zhiyuan.development.kidbridge.dao.bookSegment">
+
+    <sql id="base">
+        `bookSegment`.`id`,
+        `bookSegment`.`book_id` AS `book.id`,
+        `bookSegment`.`icon`,
+        `bookSegment`.`text`,
+        `bookSegment`.`audio`,
+        `bookSegment`.`del_flag`,
+        `bookSegment`.`create_time`,
+        `bookSegment`.`update_time`
+    </sql>
+
+    <!--绘本段落列表-->
+    <select id="list" resultType="BookSegment">
+        SELECT
+            `bookSegment`.`id`,
+            `bookSegment`.`icon`,
+            `bookSegment`.`text`,
+            `bookSegment`.`audio`
+        FROM
+            `t_book_segment` AS `bookSegment`
+        WHERE
+            `bookSegment`.`del_flag` = FALSE AND `bookSegment`.`book_id` = #{book.id}
+        ORDER BY
+            `bookSegment`.`create_time` ASC
+    </select>
+
+</mapper>

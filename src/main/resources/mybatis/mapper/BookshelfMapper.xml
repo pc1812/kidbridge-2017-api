@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.$51zhiyuan.development.kidbridge.dao.bookshelf">
+
+    <resultMap id="simpleResultMap" type="Bookshelf">
+        <result property="tag" column="tag" typeHandler="net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler" />
+    </resultMap>
+
+    <resultMap id="bookshelfDetailResultMap" type="Bookshelf">
+        <id property="id" column="bookshelf_id"/>
+        <result property="name" column="bookshelf_name" />
+        <result property="cover" column="bookshelf_cover" typeHandler="net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler" />
+        <collection property="bookList" ofType="Book">
+            <id property="id" column="book_id" />
+            <result property="name" column="book_name" />
+            <result property="icon" column="book_icon" typeHandler="net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler" />
+            <result property="price" column="book_price" />
+            <result property="fit" column="book_fit" />
+            <result property="tag" column="book_tag" typeHandler="net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler" />
+        </collection>
+    </resultMap>
+
+    <!--书单详情信息-->
+    <select id="get" resultMap="bookshelfDetailResultMap">
+        SELECT
+            `bookshelf`.`id` AS `bookshelf_id`,
+            `bookshelf`.`name` AS `bookshelf_name`,
+            `bookshelf`.`cover` AS `bookshelf_cover`,
+            `book`.`id` AS `book_id`,
+            `book`.`name` AS `book_name`,
+            `book`.`icon` AS `book_icon`,
+            `book`.`price` AS `book_price`,
+            `book`.`fit` AS `book_fit`,
+            `book`.`tag` AS `book_tag`
+        FROM
+            `t_bookshelf` AS `bookshelf`
+		LEFT JOIN
+		    (SELECT * FROM `t_bookshelf_detail` AS `bookshelfDetail` WHERE `bookshelfDetail`.`del_flag` = FALSE ) AS `bookshelfDetail` ON `bookshelfDetail`.`bookshelf_id` = `bookshelf`.`id`
+        LEFT JOIN
+            (SELECT * FROM `t_book` AS `book` WHERE `book`.`del_flag` = FALSE ) AS `book` ON `book`.`id` = `bookshelfDetail`.`book_id`
+        WHERE
+            `bookshelf`.`del_flag` = FALSE AND `bookshelf`.`id` = #{id}
+        ORDER BY
+            `bookshelf`.`create_time` DESC
+    </select>
+
+    <!--获取热门书单-->
+    <select id="hot" resultMap="simpleResultMap">
+        SELECT
+            `bookshelf`.`id`,
+            `bookshelf`.`icon`,
+            `bookshelf`.`name`,
+            `bookshelf`.`tag`,
+            `bookshelf`.`fit`
+        FROM
+            `t_bookshelf` AS `bookshelf`
+        WHERE
+            `bookshelf`.`del_flag` = FALSE AND `bookshelf`.`id` IN (SELECT `bookshelfHot`.`bookshelf_id` FROM `t_bookshelf_hot` AS `bookshelfHot` WHERE `bookshelfHot`.`del_flag` = FALSE)
+        ORDER BY
+            `bookshelf`.`create_time` DESC
+    </select>
+
+    <!--获取今日打卡书单-->
+    <select id="recommend" resultMap="simpleResultMap">
+        SELECT
+            `bookshelf`.`id`,
+            `bookshelf`.`icon`,
+            `bookshelf`.`name`,
+            `bookshelf`.`tag`,
+            `bookshelf`.`fit`
+        FROM
+            `t_bookshelf` AS `bookshelf`
+        WHERE
+            `bookshelf`.`del_flag` = FALSE AND `bookshelf`.`id` IN (SELECT `bookshelfRecommend`.`bookshelf_id` FROM `t_bookshelf_recommend` AS `bookshelfRecommend` WHERE `bookshelfRecommend`.`del_flag` = FALSE)
+        ORDER BY
+            `bookshelf`.`create_time` DESC
+    </select>
+
+</mapper>

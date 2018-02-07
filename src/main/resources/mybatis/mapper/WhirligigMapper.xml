@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.$51zhiyuan.development.kidbridge.dao.whirligig">
+
+    <sql id="base">
+        `whirligig`.`id`,
+        `whirligig`.`link`,
+        `whirligig`.`icon`,
+        `whirligig`.`type`,
+        `whirligig`.`del_flag`,
+        `whirligig`.`create_time`,
+        `whirligig`.`update_time`
+    </sql>
+
+    <!--轮播图列表-->
+    <select id="list" resultType="Whirligig">
+        SELECT
+            `whirligig`.`link`,
+            `whirligig`.`icon`,
+            `whirligig`.`type`
+        FROM
+            `t_whirligig` AS `whirligig`
+        WHERE
+            `whirligig`.`del_flag` = FALSE
+        ORDER BY
+            `whirligig`.`create_time` DESC
+    </select>
+
+</mapper>

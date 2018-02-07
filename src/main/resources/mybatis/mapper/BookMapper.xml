@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.$51zhiyuan.development.kidbridge.dao.book">
+
+
+
+
+    <sql id="base">
+        `book`.`id`,
+        `book`.`name`,
+        `book`.`icon`,
+        `book`.`price`,
+        `book`.`fit`,
+        `book`.`outline`,
+        `book`.`feeling`,
+        /*`book`.`difficulty`,*/
+        `book`.`tag`,
+        `book`.`repeat_active_time`,
+        `book`.`active`,
+        `book`.`del_flag`,
+        `book`.`create_time`,
+        `book`.`update_time`
+    </sql>
+
+    <!--获取绘本跟读有效时间-->
+    <select id="repeatActiveTime" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        SELECT
+            `book`.`repeat_active_time`
+        FROM
+            `t_book` AS `book`
+        WHERE
+            `book`.`del_flag` = FALSE AND `book`.`id` = #{_parameter}
+        ORDER BY
+            `book`.`create_time` DESC
+    </select>
+
+    <!--绘本检索-->
+    <select id="search" parameterType="java.lang.String" resultMap="simpleResultMap">
+        SELECT
+            `book`.`id`,
+            `book`.`name`,
+            `book`.`icon`,
+            `book`.`price`,
+            `book`.`fit`,
+            `book`.`tag`
+        FROM
+            `t_book` AS `book`
+        WHERE
+            `book`.`del_flag` = FALSE
+            AND `book`.`active` = TRUE
+            AND (`book`.`name` LIKE CONCAT('%',#{_parameter},'%') OR `book`.`tag` LIKE CONCAT('%',#{_parameter},'%'))
+        ORDER BY
+            `book`.`create_time` DESC
+    </select>
+
+    <!--获取绘本名称、编号、跟读时间-->
+    <select id="getNameAndRepeatActiveTime" parameterType="java.lang.Integer" resultType="Book">
+        SELECT
+            `book`.`id`,
+            `book`.`name`,
+            `book`.`repeat_active_time`
+        FROM
+            `t_book` AS `book`
+        WHERE
+            `book`.`del_flag` = FALSE
+            AND `book`.`id` = #{_parameter}
+        ORDER BY
+            `book`.`create_time` DESC
+    </select>
+
+    <resultMap id="getResultMap" type="Book">
+        <id property="id" column="book_id" />
+        <result property="name" column="book_name" />
+        <result property="icon" column="book_icon" typeHandler="net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler" />
+        <result property="price" column="book_price" />
+        <result property="fit" column="book_fit" />
+        <result property="outline" column="book_outline" />
+        <result property="feeling" column="book_feeling" />
+        <!--<result property="difficulty" column="book_difficulty" />-->
+        <result property="richText" column="book_rich_text" />
+        <result property="tag" column="book_tag" typeHandler="net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler" />
+        <association property="copyright" javaType="BookCopyright">
+            <association property="user" javaType="User">
+                <id property="id" column="bookCopyright_user_id" />
+            </association>
+        </association>
+    </resultMap>
+
+    <!--绘本详情-->
+    <select id="get" resultMap="getResultMap">
+        SELECT
+            `book`.`id` AS `book_id`,
+            `book`.`name` AS `book_name`,
+            `book`.`icon` AS `book_icon`,
+            `book`.`price` AS `book_price`,
+            `book`.`fit` AS `book_fit`,
+            `book`.`outline` AS `book_outline`,
+            `book`.`feeling` AS `book_feeling`,
+            `book`.`rich_text` AS `book_rich_text`,
+            /*`book`.`difficulty` AS `book_difficulty`,*/
+            `book`.`tag` AS `book_tag`,
+            IFNULL(bookCopyright.user_id,-1) AS `bookCopyright_user_id`
+        FROM
+            `t_book` AS `book`
+        LEFT JOIN
+		    (SELECT * FROM `t_book_copyright` AS `bookCopyright` WHERE `bookCopyright`.`del_flag` = FALSE) AS `bookCopyright` ON `bookCopyright`.`book_id` = `book`.`id`
+		WHERE
+            `book`.`del_flag` = FALSE
+            AND `book`.`id` = #{id}
+        ORDER BY
+            `book`.`create_time` DESC
+    </select>
+
+    <resultMap id="simpleResultMap" type="Book">
+        <result property="icon" column="icon" typeHandler="net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler" />
+        <result property="tag" column="tag" typeHandler="net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler" />
+    </resultMap>
+
+    <!--绘本列表-->
+    <select id="list" resultMap="simpleResultMap">
+        SELECT
+            `book`.`id`,
+            `book`.`name`,
+            `book`.`icon`,
+            `book`.`price`,
+            `book`.`fit`,
+            `book`.`tag`,
+            `userBook`.`id` IS NOT NULL AS `lock`
+        FROM
+            `t_book` AS `book`
+        LEFT JOIN
+            (SELECT * FROM `t_user_book` AS `temp` WHERE `temp`.`del_flag` = FALSE AND `temp`.`user_id` = #{user.id}) AS `userBook` ON `userBook`.`book_id` = `book`.`id`
+        WHERE
+            `book`.`del_flag` = FALSE
+            <if test="active != null">
+                AND `book`.`active` = #{active}
+            </if>
+            <if test="fit != null">
+                AND `book`.`fit` = #{fit}
+            </if>
+        ORDER BY
+            `book`.`sort` DESC,
+            `book`.`create_time` DESC
+    </select>
+
+    <resultMap id="getAppreciationResultMap" type="Book">
+        <id property="id" column="book_id" />
+        <result property="name" column="book_name" />
+        <result property="outline" column="book_outline" />
+        <association property="copyright" javaType="BookCopyright">
+            <association property="user" javaType="User">
+                <id property="id" column="bookCopyright_user_id" />
+            </association>
+        </association>
+        <collection property="bookSegmentList" ofType="BookSegment">
+            <id property="id" column="bookSegment_id" />
+            <result property="audio" column="bookSegment_audio" />
+            <result property="icon" column="bookSegment_icon" />
+        </collection>
+    </resultMap>
+
+    <!--绘本赏析-->
+    <select id="getAppreciation" parameterType="java.lang.Integer" resultMap="getAppreciationResultMap">
+        SELECT
+            `book`.`id` AS book_id,
+            `book`.`name` AS book_name,
+            `book`.`outline` AS book_outline,
+            IFNULL(bookCopyright.user_id,-1) AS `bookCopyright_user_id`,
+            `bookSegment`.`id` AS bookSegment_id,
+            `bookSegment`.`audio` AS bookSegment_audio,
+            `bookSegment`.`icon` AS bookSegment_icon
+        FROM
+            `t_book` AS `book`
+        LEFT JOIN (SELECT * FROM `t_book_segment` AS `t_book_segment` WHERE `t_book_segment`.`del_flag` = FALSE ) AS `bookSegment` ON `bookSegment`.`book_id` = `book`.`id`
+        LEFT JOIN
+		    (SELECT * FROM `t_book_copyright` AS `bookCopyright` WHERE `bookCopyright`.`del_flag` = FALSE) AS `bookCopyright` ON `bookCopyright`.`book_id` = `book`.`id`
+        WHERE
+            `book`.`del_flag` = FALSE
+            AND `bookSegment`.`del_flag` = FALSE
+            AND `book`.`id` = #{_parameter}
+        ORDER BY
+            `bookSegment`.`create_time` ASC
+    </select>
+
+    <!--绘本赏析评论列表-->
+    <select id="getAppreciationComment" parameterType="java.lang.Integer" resultType="BookComment">
+        SELECT
+            `bookComment`.`id`,
+            `bookComment`.`quote_id` AS `quote.id`,
+            `bookComment`.`user_id` AS `user.id`,
+            `bookComment`.`book_id` AS `book.id`,
+            `bookComment`.`content`,
+            `bookComment`.`create_time`,
+            `bookComment`.`update_time`
+        FROM
+           `t_book_comment` AS bookComment
+        WHERE
+            bookComment.del_flag = FALSE
+            AND bookComment.id = #{_parameter}
+        ORDER BY
+            `bookComment`.`create_time` DESC
+    </select>
+
+    <!--绘本赏析评论新增-->
+    <insert id="insAppreciationComment">
+        INSERT INTO `t_book_comment`(
+            `user_id`,
+            `book_id`,
+            `content`
+        )VALUES(
+            #{user.id},
+            #{book.id},
+            #{content,typeHandler=net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler}
+        )
+    </insert>
+
+    <!--绘本赏析评论，子评论新增-->
+    <insert id="insAppreciationCommentReply">
+        INSERT INTO `t_book_comment`(
+            `user_id`,
+            `quote_id`,
+            `book_id`,
+            `content`
+        )VALUES(
+            #{user.id},
+            #{quote.id},
+            #{book.id},
+            #{content,typeHandler=net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler}
+        )
+    </insert>
+
+    <resultMap id="bookCommentResultMap" type="BookComment">
+        <id property="id" column="bookCommentFirst_id" />
+        <result property="content" column="bookCommentFirst_content" typeHandler="net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler" />
+        <result property="createTime" column="bookCommentFirst_create_time" />
+        <association property="user" javaType="User">
+            <id property="id" column="userFirst_id" />
+            <result property="head" column="userFirst_head" />
+            <result property="nickname" column="userFirst_nickname" />
+        </association>
+        <collection property="replyList" ofType="BookComment">
+            <id property="id" column="bookCommentLess_id" />
+            <result property="content" column="bookCommentLess_content" typeHandler="net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler" />
+            <result property="createTime" column="bookCommentLess_create_time" />
+            <association property="user" notNullColumn="bookCommentLess_id" javaType="User">
+                <id property="id" column="userLess_id" />
+                <result property="head" column="userLess_head" />
+                <result property="nickname" column="userLess_nickname" />
+            </association>
+        </collection>
+    </resultMap>
+
+    <!--绘本赏析评论列表-->
+    <select id="getAppreciationCommentList" parameterType="java.lang.Integer" resultMap="bookCommentResultMap">
+        SELECT
+            `userFirst`.`id` AS `userFirst_id`,
+            `userFirst`.`head` AS `userFirst_head`,
+            `userFirst`.`nickname` AS `userFirst_nickname`,
+            `bookCommentFirst`.`id` AS `bookCommentFirst_id`,
+            `bookCommentFirst`.`content` AS `bookCommentFirst_content`,
+            `bookCommentFirst`.`create_time` AS `bookCommentFirst_create_time`,
+            `userLess`.`id` AS `userLess_id`,
+            `userLess`.`head` AS `userLess_head`,
+            `userLess`.`nickname` AS `userLess_nickname`,
+            `bookCommentLess`.`id` AS `bookCommentLess_id`,
+            `bookCommentLess`.`content` AS `bookCommentLess_content`,
+            `bookCommentLess`.`create_time` AS `bookCommentLess_create_time`
+        FROM
+            (SELECT * FROM `t_book_comment` AS `bookComment` WHERE `bookComment`.`del_flag` = FALSE AND `bookComment`.`quote_id` = -1 AND `bookComment`.`book_id` = #{bookId} ORDER BY `bookComment`.`create_time` DESC LIMIT #{page.offset},#{page.limit} ) AS `bookCommentFirst`
+        LEFT JOIN
+            (SELECT * FROM `t_user` AS `user` WHERE `user`.`del_flag` = FALSE ) AS `userFirst` ON `userFirst`.`id` = `bookCommentFirst`.`user_id`
+        LEFT JOIN
+            (SELECT * FROM `t_book_comment` AS temp WHERE temp.del_flag = FALSE) AS `bookCommentLess` ON `bookCommentLess`.`quote_id` = `bookCommentFirst`.`id`
+        LEFT JOIN
+            (SELECT * FROM `t_user` AS `user` WHERE `user`.`del_flag` = FALSE ) AS `userLess` ON `userLess`.`id` = `bookCommentLess`.`user_id`
+        ORDER BY `bookCommentFirst`.`create_time` DESC
+    </select>
+
+</mapper>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.$51zhiyuan.development.kidbridge.dao.medal">
+
+    <resultMap id="simpleResultMap" type="Medal">
+        <result property="icon" column="icon" typeHandler="net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler" />
+    </resultMap>
+
+    <resultMap id="phaseResultMap" type="java.util.HashMap">
+        <result property="over" column="over_bonus" />
+        <association property="now" javaType="java.util.HashMap">
+            <result property="id" column="now_id" />
+            <result property="name" column="now_name" />
+        </association>
+        <association property="future" javaType="java.util.HashMap">
+            <result property="id" column="future_id" />
+            <result property="name" column="future_name" />
+        </association>
+    </resultMap>
+
+    <select id="get" resultType="Medal">
+
+    </select>
+
+    <!--勋章列表-->
+    <select id="list" resultMap="simpleResultMap">
+        SELECT
+            `medal`.`id`,
+            `medal`.`name`,
+            `medal`.`icon`,
+            `medal`.`bonus`
+        FROM
+            `t_medal` AS `medal`
+        WHERE
+            `medal`.`del_flag` = FALSE
+        ORDER BY
+            `medal`.`create_time` DESC
+    </select>
+
+    <!--当前积分到下一勋章的信息-->
+    <select id="future" parameterType="java.lang.Integer" resultType="Medal">
+        SELECT
+            `medal`.`id`,
+            `medal`.`name`,
+            `medal`.`bonus`
+        FROM
+            `t_medal` AS `medal`
+        WHERE
+            `medal`.`del_flag` = FALSE AND `medal`.`bonus` > #{_parameter}
+        LIMIT 1
+    </select>
+
+    <!--当前积分对应的勋章信息-->
+    <select id="now" parameterType="java.lang.Integer" resultType="Medal">
+        SELECT
+            `medal`.`id`,
+            `medal`.`name`,
+            `medal`.`bonus`
+        FROM
+            `t_medal` AS `medal`
+        WHERE
+            `medal`.`del_flag` = FALSE AND #{_parameter} >= `medal`.`bonus`
+        ORDER BY
+            `medal`.`bonus` DESC
+        LIMIT 1
+    </select>
+
+</mapper>

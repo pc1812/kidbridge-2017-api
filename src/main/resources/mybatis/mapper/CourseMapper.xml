@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.$51zhiyuan.development.kidbridge.dao.course">
+
+    <insert id="add">
+        INSERT INTO `picturebook_copy`.`t_user_course`(
+            `user_id`,
+            `course_id`
+        )VALUES(
+            #{user.id},
+            #{course.id}
+        )
+    </insert>
+
+    <resultMap id="getResultMap" type="Course">
+        <id property="id" column="course_id" />
+        <result property="name" column="course_name" />
+        <result property="icon" column="course_icon" typeHandler="net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler" />
+        <!--<result property="outline" column="course_outline" />-->
+        <result property="tag" column="course_tag" typeHandler="net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler" />
+        <result property="fit" column="course_fit" />
+        <result property="price" column="course_price" />
+        <result property="enter" column="course_enter" />
+        <result property="limit" column="course_limit" />
+        <result property="cycle" column="course_cycle" />
+        <result property="richText" column="course_rich_text" />
+        <result property="status" column="course_status" />
+        <association property="copyright" javaType="CourseCopyright">
+            <association property="user" javaType="User">
+                <id property="id" column="courseCopyright_user_id" />
+            </association>
+        </association>
+    </resultMap>
+
+    <!--课程详情-->
+    <select id="get" resultMap="getResultMap">
+        SELECT
+            `course`.`id` AS `course_id`,
+            `course`.`name` AS `course_name`,
+            `course`.`icon` AS `course_icon`,
+            /*`course`.`outline` AS `course_outline`,*/
+            `course`.`tag` AS `course_tag`,
+            `course`.`fit` AS `course_fit`,
+            `course`.`rich_text` AS `course_rich_text`,
+            `course`.`price` AS `course_price`,
+            (SELECT COUNT(*) FROM `t_user_course` AS `userCourse` WHERE `userCourse`.`del_flag` = FALSE AND `userCourse`.`course_id` = `course`.`id`) AS `course_enter`,
+            `course`.`limit` AS course_limit,
+            (SELECT SUM(`cycle`) FROM `t_course_detail` AS `courseDetail` WHERE `courseDetail`.`del_flag` = FALSE AND `courseDetail`.`course_id` = `course`.`id`) AS `course_cycle`,
+            (IF((NOW() >= `course`.`start_time`),IF((DATE_ADD(`course`.`start_time`,INTERVAL (SELECT SUM(`cycle`) FROM `t_course_detail` AS `courseDetail` WHERE `courseDetail`.`del_flag` = FALSE AND `courseDetail`.`course_id` = `course`.`id`) DAY) >= NOW()),1,2),0)) AS `course_status`,
+			IFNULL(courseCopyright.user_id,-1) AS `courseCopyright_user_id`
+        FROM
+            `t_course` AS `course`
+		LEFT JOIN
+		    (SELECT * FROM `t_course_copyright` AS `courseCopyright` WHERE `courseCopyright`.`del_flag` = FALSE) AS `courseCopyright` ON `courseCopyright`.`course_id` = `course`.`id`
+        WHERE
+            `course`.`del_flag` = FALSE
+            AND `course`.`id` = #{id}
+        ORDER BY
+            `course`.`create_time` DESC
+    </select>
+
+    <!--教师的课程-->
+    <select id="teacherCourse" parameterType="java.util.HashMap" resultMap="simpleResultMap">
+        SELECT
+            `course`.`id`,
+            `course`.`name`,
+            `course`.`icon`,
+            `course`.`tag`,
+            `course`.`fit`,
+            `course`.`price`,
+            (SELECT COUNT(*) FROM `t_user_course` AS `userCourse` WHERE `userCourse`.`del_flag` = FALSE AND `userCourse`.`course_id` = `course`.`id`) AS `enter`,
+            `course`.`limit`,
+            (SELECT SUM(`cycle`) FROM `t_course_detail` AS `courseDetail` WHERE `courseDetail`.`del_flag` = FALSE AND `courseDetail`.`course_id` = `course`.`id`) AS `cycle`,
+            (IF((NOW() >= `course`.`start_time`),IF((DATE_ADD(`course`.`start_time`,INTERVAL (SELECT SUM(`cycle`) FROM `t_course_detail` AS `courseDetail` WHERE `courseDetail`.`del_flag` = FALSE AND `courseDetail`.`course_id` = `course`.`id`) DAY) >= NOW()),1,2),0)) AS `status`
+        FROM
+            `t_course` AS `course`
+        WHERE
+            `course`.`del_flag` = FALSE
+            AND `course`.`teacher_id` = (SELECT `teacher`.`id` FROM `t_teacher` AS `teacher` WHERE `teacher`.`del_flag` = FALSE AND `teacher`.`user_id` = #{_parameter})
+        ORDER BY
+            `course`.`create_time` DESC
+    </select>
+
+    <resultMap id="simpleResultMap" type="Course">
+        <result property="icon" column="icon" typeHandler="net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler" />
+        <result property="tag" column="tag" typeHandler="net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler" />
+    </resultMap>
+
+    <!--课程列表-->
+    <select id="list" resultMap="simpleResultMap">
+        SELECT
+            `course`.`id`,
+            `course`.`name`,
+            `course`.`icon`,
+            `course`.`tag`,
+            `course`.`fit`,
+            `course`.`price`,
+            (SELECT COUNT(*) FROM `t_user_course` AS `userCourse` WHERE `userCourse`.`del_flag` = FALSE AND `userCourse`.`course_id` = `course`.`id`) AS `enter`,
+            `course`.`limit`,
+            (SELECT SUM(`cycle`) FROM `t_course_detail` AS `courseDetail` WHERE `courseDetail`.`del_flag` = FALSE AND `courseDetail`.`course_id` = `course`.`id`) AS `cycle`,
+            (IF((NOW() >= `course`.`start_time`),IF((DATE_ADD(`course`.`start_time`,INTERVAL (SELECT SUM(`cycle`) FROM `t_course_detail` AS `courseDetail` WHERE `courseDetail`.`del_flag` = FALSE AND `courseDetail`.`course_id` = `course`.`id`) DAY) >= NOW()),1,2),0)) AS `status`,
+            `userCourse`.`id` IS NOT NULL AS `lock`
+        FROM
+            `t_course` AS `course`
+        LEFT JOIN
+            (SELECT * FROM `t_user_course` AS `temp` WHERE `temp`.`del_flag` = FALSE AND `temp`.`user_id` = #{user.id}) AS `userCourse` ON `userCourse`.`course_id` = `course`.`id`
+        WHERE
+            `course`.`del_flag` = FALSE
+            <if test="fit != null">
+                AND `course`.`fit` = #{fit}
+            </if>
+        ORDER BY
+            `course`.`create_time` DESC
+    </select>
+
+    <resultMap id="getCourseBookListResultMap" type="Course">
+        <id property="id" column="course_id" />
+        <result property="name" column="course_name" />
+        <collection property="courseDetailList" ofType="CourseDetail">
+            <id property="id" column="courseDetail_id" />
+            <result property="cycle" column="courseDetail_cycle" />
+            <result property="startTime" column="book_start_time" />
+            <association property="book" javaType="Book">
+                <id property="id" column="book_id" />
+                <result property="icon" column="book_icon" typeHandler="net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler" />
+            </association>
+        </collection>
+    </resultMap>
+
+    <!--某个课程下的绘本列表-->
+    <select id="getCourseBookList" parameterType="java.lang.Integer" resultMap="getCourseBookListResultMap">
+        SELECT
+            `course`.`id` AS `course_id`,
+            `course`.`name` AS `course_name`,
+            `book`.`id` AS `book_id`,
+            `book`.`icon` AS `book_icon`,
+            `courseDetail`.`id` AS `courseDetail_id`,
+            `courseDetail`.`cycle` AS `courseDetail_cycle`,
+            DATE_ADD(course.start_time,INTERVAL @temp DAY) AS `book_start_time`,
+            @temp:=@temp+`courseDetail`.`cycle` AS `temp`
+        FROM
+            `t_course` AS `course`, `t_course_detail` AS `courseDetail`, `t_book` AS `book`, (SELECT @temp:=0) AS `temp`
+        WHERE
+            `course`.`del_flag` = FALSE
+            AND `book`.`del_flag` = FALSE
+            AND `course`.`id` = `courseDetail`.`course_id`
+            AND `courseDetail`.`del_flag` = FALSE
+            AND `courseDetail`.`book_id` = `book`.`id`
+            AND `courseDetail`.`course_id` = #{_parameter}
+        ORDER BY
+            `courseDetail`.`create_time` ASC
+    </select>
+
+    <!--获取课程下的绘本打卡时间-->
+    <select id="getCourseBookActiveTime" resultType="CourseDetail">
+        SELECT
+            `courseDetail`.`courseDetail_cycle` AS `cycle`,
+            `courseDetail`.`book_start_time` AS `startTime`
+        FROM (SELECT
+                    `course`.`id` AS `course_id`,
+                    `course`.`name` AS `course_name`,
+                    `book`.`id` AS `book_id`,
+                    `book`.`icon` AS `book_icon`,
+                    `courseDetail`.`id` AS `courseDetail_id`,
+                    `courseDetail`.`cycle` AS `courseDetail_cycle`,
+                    DATE_ADD(course.start_time,INTERVAL @temp DAY) AS `book_start_time`,
+                    @temp:=@temp+`courseDetail`.`cycle` AS `temp`
+                FROM
+                    `t_course` AS `course`, `t_course_detail` AS `courseDetail`, `t_book` AS `book`, (SELECT @temp:=0) AS `temp`
+                WHERE
+                    `course`.`id` = `courseDetail`.`course_id`
+                    AND `courseDetail`.`del_flag` = FALSE
+                    AND `courseDetail`.`book_id` = `book`.`id`
+                    AND `courseDetail`.`course_id` = #{course.id}
+                ORDER BY
+                    `courseDetail`.`create_time` ASC) AS `courseDetail`
+        WHERE
+            `courseDetail`.`book_id` = #{book.id}
+    </select>
+
+    <!--课程详情信息-->
+    <select id="getCourseDetail" resultType="CourseDetail">
+        SELECT
+            `courseDetail`.`id`,
+            `courseDetail`.`course_id` AS `course.id`,
+            `courseDetail`.`book_id` AS `book.id`,
+            `courseDetail`.`cycle`,
+            `courseDetail`.`del_flag`,
+            `courseDetail`.`create_time`,
+            `courseDetail`.`update_time`
+        FROM
+            `t_course_detail` AS `courseDetail`
+        WHERE
+            `courseDetail`.`del_flag` = FALSE
+            AND `courseDetail`.`course_id` = #{course.id}
+            AND `courseDetail`.`book_id` = #{book.id}
+        ORDER BY
+            `courseDetail`.`create_time` DESC
+    </select>
+
+    <!--获取课程打卡信息-->
+    <select id="getUserCourseSignSchedule" parameterType="java.util.HashMap" resultType="UserCourseRepeat">
+        SELECT
+            `userCourseRepeat`.`book_id` AS `book.id`,
+            `userCourseRepeat`.`create_time`
+        FROM
+            `t_user_course_repeat` AS `userCourseRepeat`
+        WHERE
+            `userCourseRepeat`.`del_flag` = FALSE
+            AND `userCourseRepeat`.`user_course_id` = #{userCourseId}
+            AND DATE_FORMAT(`userCourseRepeat`.`create_time`,'%Y%m') = #{date}
+        ORDER BY
+            `userCourseRepeat`.`create_time` DESC
+    </select>
+
+    <resultMap id="getTodaySignListResultMap" type="java.util.HashMap">
+        <id property="id" column="user_id" javaType="java.lang.Integer" />
+        <result property="nickname" column="user_nickname" javaType="java.lang.String" />
+        <result property="head" column="user_head" javaType="java.lang.String" />
+        <result property="repeat" column="userCourseRepeat_id" />
+        <result property="createTime" column="userCourseRepeat_create_time" javaType="java.lang.Long" />
+    </resultMap>
+
+    <!--课程，用户今日打卡列表-->
+    <select id="getTodaySignList" parameterType="java.util.HashMap" resultMap="getTodaySignListResultMap">
+        SELECT
+            `user`.`id` AS `user_id`,
+            `user`.`nickname` AS `user_nickname`,
+            `user`.`head` AS `user_head`,
+            IFNULL(`userCourseRepeat`.`id`,-1) AS `userCourseRepeat_id`,
+            IFNULL(UNIX_TIMESTAMP(`userCourseRepeat`.`create_time`) * 1000,-1) AS `userCourseRepeat_create_time`
+        FROM
+            `t_course` AS `course`
+        LEFT JOIN
+            (SELECT * FROM `t_user_course` AS `userCourse` WHERE `userCourse`.`del_flag` = FALSE ) AS `userCourse` ON `userCourse`.`course_id` = `course`.`id`
+        LEFT JOIN
+            (SELECT * FROM `t_user_course_repeat` AS `temp` WHERE `temp`.`del_flag` = FALSE AND DATE_FORMAT(`temp`.`create_time`,'%Y%m%d') =
+            <choose>
+                <when test="date != null and date != ''">
+                    #{date}
+                </when>
+                <otherwise>
+                    DATE_FORMAT(NOW(),'%Y%m%d')
+                </otherwise>
+            </choose>
+            ) AS `userCourseRepeat` ON `userCourseRepeat`.`user_course_id` = `userCourse`.`id`
+        RIGHT JOIN
+            (SELECT * FROM `t_user` AS `user` WHERE `user`.`del_flag` = FALSE) AS `user` ON `user`.`id` = `userCourse`.`user_id`
+        WHERE
+            `course`.`del_flag` = FALSE
+            AND `course`.`id` = #{courseId}
+        ORDER BY
+            `userCourseRepeat`.`create_time` DESC
+    </select>
+
+    <!--新增课程赏析区评论-->
+    <insert id="insAppreciationComment">
+        INSERT INTO `t_course_comment`(
+            `user_id`,
+            `course_id`,
+            `content`
+        )VALUES(
+            #{user.id},
+            #{course.id},
+            #{content,typeHandler=net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler}
+        )
+    </insert>
+
+    <resultMap id="courseCommentResultMap" type="CourseComment">
+        <id property="id" column="courseCommentFirst_id" />
+        <result property="content" column="courseCommentFirst_content" typeHandler="net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler" />
+        <result property="createTime" column="courseCommentFirst_create_time" />
+        <association property="user" javaType="User">
+            <id property="id" column="userFirst_id" />
+            <result property="head" column="userFirst_head" />
+            <result property="nickname" column="userFirst_nickname" />
+        </association>
+        <collection property="replyList" ofType="CourseComment">
+            <id property="id" column="courseCommentLess_id" />
+            <result property="content" column="courseCommentLess_content" typeHandler="net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler" />
+            <result property="createTime" column="courseCommentLess_create_time" />
+            <association property="user" notNullColumn="courseCommentLess_id" javaType="User">
+                <id property="id" column="userLess_id" />
+                <result property="head" column="userLess_head" />
+                <result property="nickname" column="userLess_nickname" />
+            </association>
+        </collection>
+    </resultMap>
+
+    <!--课程赏析区评论列表-->
+    <select id="getAppreciationCommentList" parameterType="java.lang.Integer" resultMap="courseCommentResultMap">
+        SELECT
+            `userFirst`.`id` AS `userFirst_id`,
+            `userFirst`.`head` AS `userFirst_head`,
+            `userFirst`.`nickname` AS `userFirst_nickname`,
+            `courseCommentFirst`.`id` AS `courseCommentFirst_id`,
+            `courseCommentFirst`.`content` AS `courseCommentFirst_content`,
+            `courseCommentFirst`.`create_time` AS `courseCommentFirst_create_time`,
+            `userLess`.`id` AS `userLess_id`,
+            `userLess`.`head` AS `userLess_head`,
+            `userLess`.`nickname` AS `userLess_nickname`,
+            `courseCommentLess`.`id` AS `courseCommentLess_id`,
+            `courseCommentLess`.`content` AS `courseCommentLess_content`,
+            `courseCommentLess`.`create_time` AS `courseCommentLess_create_time`
+        FROM
+          (SELECT * FROM `t_course_comment` AS `courseComment` WHERE `courseComment`.`del_flag` = FALSE AND `courseComment`.`quote_id` = -1 AND `courseComment`.`course_id` = #{courseId} ORDER BY `courseComment`.`create_time` DESC LIMIT #{page.offset},#{page.limit} ) AS `courseCommentFirst`
+        LEFT JOIN
+          (SELECT * FROM `t_user` AS `user` WHERE `user`.`del_flag` = FALSE) AS `userFirst` ON `userFirst`.`id` = `courseCommentFirst`.`user_id`
+        LEFT JOIN
+          (SELECT * FROM `t_course_comment` AS temp WHERE temp.del_flag = FALSE) AS `courseCommentLess` ON `courseCommentLess`.`quote_id` = `courseCommentFirst`.`id`
+        LEFT JOIN
+          (SELECT * FROM `t_user` AS `user` WHERE `user`.`del_flag` = FALSE) AS `userLess` ON `userLess`.`id` = `courseCommentLess`.`user_id`
+        ORDER BY `courseCommentFirst`.`create_time` DESC
+    </select>
+
+    <!--获取赏析区评论-->
+    <select id="getAppreciationComment" parameterType="java.lang.Integer" resultType="CourseComment">
+        SELECT
+            `courseComment`.`id`,
+            `courseComment`.`quote_id` AS `quote.id`,
+            `courseComment`.`user_id` AS `user.id`,
+            `courseComment`.`course_id` AS `course.id`,
+            `courseComment`.`content`,
+            `courseComment`.`create_time`,
+            `courseComment`.`update_time`
+        FROM
+            `t_course_comment` AS courseComment
+        WHERE
+            courseComment.del_flag = FALSE
+            AND courseComment.id = #{_parameter}
+        ORDER BY
+            `courseComment`.`create_time` DESC
+    </select>
+
+    <!--课程赏析区评论，新增子评论-->
+    <insert id="insAppreciationCommentReply">
+        INSERT INTO `t_course_comment`(
+            `user_id`,
+            `quote_id`,
+            `course_id`,
+            `content`
+        )VALUES(
+            #{user.id},
+            #{quote.id},
+            #{course.id},
+            #{content,typeHandler=net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler}
+        )
+    </insert>
+
+</mapper> 

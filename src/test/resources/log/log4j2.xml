@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn" name="spring">
+    <Appenders>
+        <Console name="CONSOLE" target="SYSTEM_ERR">
+            <PatternLayout pattern="[ kidbridge ]  %-5p  %d{yyyy-MM-dd HH:mm:ss:SSS}  Message: %m  Location: %l %n%n"/>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Root level="ALL"/>
+        <Logger name="net.$51zhiyuan.development.kidbridge" level="DEBUG">
+            <AppenderRef ref="CONSOLE"/>
+        </Logger>
+        <Logger name="org.springframework" level="ERROR">
+            <AppenderRef ref="CONSOLE"/>
+        </Logger>
+    </Loggers>
+</Configuration>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD SQL Map Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <settings>
+        <setting name="logImpl" value="LOG4J2"/>
+        <!--<setting name="logImpl" value="NO_LOGGING" />-->
+        <setting name="cacheEnabled" value="false"/>
+        <setting name="useGeneratedKeys" value="true"/>
+        <setting name="defaultExecutorType" value="REUSE"/>
+        <setting name="lazyLoadingEnabled" value="true"/>
+        <setting name="aggressiveLazyLoading" value="false"/>
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+    </settings>
+
+    <typeAliases>
+        <package name="net.$51zhiyuan.development.kidbridge.ui.model"/>
+    </typeAliases>
+
+    <plugins>
+        <plugin interceptor="com.github.pagehelper.PageInterceptor">
+            <property name="helperDialect" value="mysql"/>
+            <!--
+            <property name="offsetAsPageNum" value="true"/>
+            <property name="rowBoundsWithCount" value="true"/>
+            -->
+            <property name="reasonable" value="true"/>
+        </plugin>
+    </plugins>
+
+    <!--<typeHandlers>-->
+    <!--<typeHandler handlcn.hkhl.development.wechatmall.typehandler.JsonTypeHandlerer" jdbcType="VARCHAR"/>-->
+    <!--</typeHandlers>-->
+
+    <mappers>
+        <mapper resource="mybatis/mapper/ArticleMapper.xml"/>
+        <mapper resource="mybatis/mapper/AuthcMapper.xml"/>
+        <mapper resource="mybatis/mapper/BillMapper.xml"/>
+        <mapper resource="mybatis/mapper/BookCopyrightMapper.xml"/>
+        <mapper resource="mybatis/mapper/BookMapper.xml"/>
+        <mapper resource="mybatis/mapper/BookSegmentMapper.xml"/>
+        <mapper resource="mybatis/mapper/CourseDetailMapper.xml"/>
+        <mapper resource="mybatis/mapper/CourseHotMapper.xml"/>
+        <mapper resource="mybatis/mapper/CourseMapper.xml"/>
+        <mapper resource="mybatis/mapper/FeedbackMapper.xml"/>
+        <mapper resource="mybatis/mapper/MedalMapper.xml"/>
+        <mapper resource="mybatis/mapper/TeacherMapper.xml"/>
+        <mapper resource="mybatis/mapper/UserBookMapper.xml"/>
+        <mapper resource="mybatis/mapper/UserBookRepeatCommentMapper.xml"/>
+        <mapper resource="mybatis/mapper/UserBookRepeatLikeMapper.xml"/>
+        <mapper resource="mybatis/mapper/UserBookRepeatMapper.xml"/>
+        <mapper resource="mybatis/mapper/UserCourseMapper.xml"/>
+        <mapper resource="mybatis/mapper/UserCourseRepeatMapper.xml"/>
+        <mapper resource="mybatis/mapper/UserMapper.xml"/>
+        <mapper resource="mybatis/mapper/WhirligigMapper.xml"/>
+        <mapper resource="mybatis/mapper/BookshelfDetailMapper.xml"/>
+        <mapper resource="mybatis/mapper/BookshelfMapper.xml"/>
+        <mapper resource="mybatis/mapper/RechargeMapper.xml"/>
+        <mapper resource="mybatis/mapper/ConfigMapper.xml"/>
+    </mappers>
+
+</configuration>

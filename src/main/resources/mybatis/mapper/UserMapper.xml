@@ -1,0 +1,942 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.$51zhiyuan.development.kidbridge.dao.user">
+
+    <!--获取用户详情信息-->
+    <select id="get" resultType="User">
+        SELECT
+            `user`.`id`,
+            `user`.`phone`,
+            `user`.`password`,
+            `user`.`head`,
+            `user`.`nickname`,
+            `user`.`birthday`,
+            `user`.`address`,
+            `user`.`bonus`,
+            `user`.`balance`,
+            `user`.`del_flag`,
+            `user`.`create_time`,
+            `user`.`update_time`
+        FROM
+            `t_user` AS `user`
+        WHERE
+            `user`.`del_flag` = FALSE
+            <if test="id != null">
+                AND `user`.`id` = #{id}
+            </if>
+            <if test="phone != null and phone != ''">
+                AND `user`.`phone` = #{phone}
+            </if>
+        ORDER BY
+            `user`.`create_time` DESC
+    </select>
+
+    <!--登录验证-->
+    <select id="login" parameterType="java.lang.String" resultType="User">
+        SELECT
+            `user`.`id`,
+            `user`.`password`
+        FROM
+            `t_user` AS `user`
+        WHERE
+            `user`.`del_flag` = FALSE AND `user`.`phone` = #{_parameter}
+        ORDER BY
+            `user`.`create_time` DESC
+    </select>
+
+    <!--余额信息-->
+    <select id="balance" parameterType="java.lang.Integer" resultType="User">
+        SELECT
+            `user`.`balance`
+        FROM
+            `t_user` AS `user`
+        WHERE
+            `user`.`del_flag` = FALSE AND `user`.`id` = #{_parameter}
+        ORDER BY
+            `user`.`create_time` DESC
+    </select>
+
+    <!--水滴信息-->
+    <select id="bonus" parameterType="java.lang.Integer" resultType="User">
+        SELECT
+            `user`.`bonus`
+        FROM
+            `t_user` AS `user`
+        WHERE
+            `user`.`del_flag` = FALSE AND `user`.`id` = #{_parameter}
+        ORDER BY
+            `user`.`create_time` DESC
+    </select>
+
+    <!--我的资料信息-->
+    <select id="info" parameterType="java.lang.Integer" resultType="User">
+        SELECT
+            `user`.`phone`,
+            `user`.`head`,
+            `user`.`nickname`,
+            `user`.`birthday`,
+            `user`.`receiving_contact` AS `receivingContact`,
+            `user`.`receiving_phone` AS `receivingPhone`,
+            `user`.`receiving_region` AS `receivingRegion`,
+            `user`.`receiving_street` AS `receivingStreet`
+        FROM
+            `t_user` AS `user`
+        WHERE
+            `user`.`del_flag` = FALSE AND `user`.`id` = #{_parameter}
+        ORDER BY
+            `user`.`create_time` DESC
+    </select>
+
+    <!--修改用户信息-->
+    <update id="update">
+        UPDATE `t_user`
+        <set>
+            <if test="phone != null">
+                `phone` = #{phone},
+            </if>
+            <if test="password != null">
+                `password` = #{password},
+            </if>
+            <if test="head != null">
+                `head` = #{head},
+            </if>
+            <if test="nickname != null">
+                `nickname` = #{nickname},
+            </if>
+            <if test="birthday != null">
+                `birthday` = #{birthday},
+            </if>
+            <if test="address != null">
+                `address` = #{address},
+            </if>
+            <if test="bonus != null">
+                `bonus` = (`bonus` + #{bonus}),
+            </if>
+            <if test="balance != null">
+                `balance` = (`balance` + #{balance}),
+            </if>
+            <if test="signature != null">
+                `signature` = #{signature},
+            </if>
+            <if test="receivingContact != null">
+                `receiving_contact` = #{receivingContact},
+            </if>
+            <if test="receivingPhone != null">
+                `receiving_phone` = #{receivingPhone},
+            </if>
+            <if test="receivingRegion != null">
+                `receiving_region` = #{receivingRegion},
+            </if>
+            <if test="receivingStreet != null">
+                `receiving_street` = #{receivingStreet}
+            </if>
+        </set>
+        WHERE
+            `del_flag` = FALSE
+            <if test="id != null">
+                AND `id` = #{id}
+            </if>
+            <if test="phone != null">
+                AND `phone` = #{phone}
+            </if>
+    </update>
+
+    <!--用户基本信息-->
+    <select id="outline" resultType="User">
+        SELECT
+            `user`.`id`,
+            `user`.`head`,
+            `user`.`bonus`,
+            `user`.`nickname`,
+            TIMESTAMPDIFF(YEAR,`user`.`birthday`,NOW()) AS `age`,
+            `user`.`signature`,
+            `user`.`balance`
+        FROM
+            `t_user` AS `user`
+        WHERE
+            `user`.`del_flag` = FALSE AND `user`.`id` = #{_parameter}
+        ORDER BY
+            `user`.`create_time` DESC
+    </select>
+
+    <!--新增用户跟读信息-->
+    <insert id="bookRepeat" keyProperty="id">
+        INSERT INTO `t_user_book_repeat`(
+            `user_book_id`,
+            `segment`
+        )VALUES(
+            #{userBook.id},
+            #{segment,typeHandler=net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler}
+        )
+    </insert>
+
+    <!--删除用户跟读信息-->
+    <update id="bookRepeatDetele" parameterType="java.util.HashMap">
+        UPDATE `t_user_book_repeat` AS `userBookRepeat`, `t_user_book` AS `userBook`
+        SET
+            `userBookRepeat`.`del_flag` = TRUE
+        WHERE
+            `userBookRepeat`.`user_book_id` = `userBook`.`id`
+            AND `userBook`.`user_id` = #{userId}
+            AND userBookRepeat.id IN <foreach collection="idList" item="item" open="(" separator="," close=")">#{item}</foreach>
+    </update>
+
+    <!--新增用户课程跟读信息-->
+    <insert id="courseRepeat" keyProperty="id">
+        INSERT INTO `t_user_course_repeat`(
+            `user_course_id`,
+            `book_id`,
+            `segment`
+        )VALUES(
+            #{userCourse.id},
+            #{book.id},
+            #{segment,typeHandler=net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler}
+        )
+    </insert>
+
+    <!--修改用户课程跟读信息-->
+    <update id="updateCourseRepeat">
+        UPDATE `t_user_course_repeat`
+        SET
+            `segment` = #{segment,typeHandler=net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler}
+        WHERE
+            `id` = #{id}
+    </update>
+
+    <!--判断用户今日是否已跟读某绘本-->
+    <select id="bookRepeatTodayExist" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        SELECT
+            `userBookRepeat`.`id`
+        FROM
+            `t_user_book_repeat` AS `userBookRepeat`
+        WHERE
+            `userBookRepeat`.`del_flag` = FALSE
+            AND `userBookRepeat`.`user_book_id` = #{_parameter}
+            AND DATE_FORMAT(`userBookRepeat`.`create_time`,'%Y%m%d') = DATE_FORMAT(NOW(),'%Y%m%d')
+        ORDER BY
+            `userBookRepeat`.`create_time` DESC
+    </select>
+
+    <!--用户某个绘本已经跟读过-->
+    <select id="bookRepeatExist" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        SELECT
+            `userBookRepeat`.`id`
+        FROM
+            `t_user_book_repeat` AS `userBookRepeat`
+        WHERE
+            `userBookRepeat`.`del_flag` = FALSE
+            AND `userBookRepeat`.`user_book_id` = #{_parameter}
+        ORDER BY
+            `userBookRepeat`.`create_time` DESC
+    </select>
+
+    <!--更新用户绘本跟读信息-->
+    <update id="updateUserBookRepeat">
+        UPDATE `t_user_book_repeat`
+            <set>
+                <if test="userBook != null and userBook.id != null">
+                    `user_book_id` = #{userBook.id},
+                </if>
+                <if test="segment != null">
+                    `segment` = #{segment,typeHandler=net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler},
+                </if>
+                <if test="delFlag != null">
+                    `del_flag` = #{delFlag}
+                </if>
+            </set>
+        WHERE
+            `id` = #{id}
+    </update>
+
+    <resultMap id="getUserBookRepeatListResultMap" type="UserBookRepeat">
+        <id property="id" column="userBookRepeat_id" />
+        <association property="userBook" javaType="UserBook">
+            <association property="book" javaType="Book">
+                <id property="id" column="book_id" />
+                <result property="name" column="book_name" />
+                <result property="icon" column="book_icon" typeHandler="net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler" />
+                <result property="fit" column="book_fit" />
+                <result property="tag" column="book_tag" typeHandler="net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler" />
+            </association>
+        </association>
+    </resultMap>
+
+    <!--获取用户绘本跟读列表-->
+    <select id="getUserBookRepeatList" parameterType="java.lang.Integer" resultMap="getUserBookRepeatListResultMap">
+        SELECT
+            `userBookRepeat`.`id` AS userBookRepeat_id,
+            `book`.`id` AS book_id,
+            `book`.`name` AS book_name,
+            `book`.`icon` AS book_icon,
+            `book`.`fit` AS book_fit,
+            `book`.`tag` AS book_tag
+        FROM
+            `t_user_book_repeat` AS `userBookRepeat`
+        LEFT JOIN
+            (SELECT * FROM `t_user_book` AS `userBook` WHERE `userBook`.`del_flag` = FALSE ) AS `userBook` ON `userBook`.`id` = `userBookRepeat`.`user_book_id`
+        LEFT JOIN
+            (SELECT * FROM `t_book` AS `book` WHERE `book`.`del_flag` = FALSE ) AS `book` ON `book`.`id` = `userBook`.`book_id`
+        WHERE
+            `userBookRepeat`.`del_flag` = FALSE
+            AND `userBook`.`del_flag` = FALSE
+            AND `userBook`.`user_id` = #{_parameter}
+        ORDER BY
+            `userBookRepeat`.`create_time` DESC
+    </select>
+
+    <resultMap id="getUserBookRepeatResultMap" type="UserBookRepeat">
+        <id property="id" column="userBookRepeat_id" />
+        <result property="like" column="userBookRepeat_like" />
+        <result property="segment" column="userBookRepeat_segment" typeHandler="net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler" />
+        <result property="createTime" column="userBookRepeat_update_time" />
+        <result property="updateTime" column="userBookRepeat_update_time" />
+        <association property="userBook" javaType="UserBook">
+                <association property="user" javaType="User">
+                    <id property="id" column="user_id" />
+                    <result property="head" column="user_head" />
+                    <result property="nickname" column="user_nickname" />
+                    <result property="signature" column="user_signature" />
+                </association>
+                <association property="book" javaType="Book">
+                    <id property="id" column="book_id" />
+                    <result property="name" column="book_name" />
+                    <result property="icon" column="book_icon" typeHandler="net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler" />
+                    <result property="outline" column="book_outline" />
+                </association>
+        </association>
+    </resultMap>
+
+    <!--获取用户绘本跟读详情-->
+    <select id="getUserBookRepeat" parameterType="java.lang.Integer" resultMap="getUserBookRepeatResultMap">
+        SELECT
+			`user`.`id` AS `user_id`,
+            `user`.`nickname` AS `user_nickname`,
+            `user`.`head` AS `user_head`,
+            `user`.`signature` AS `user_signature`,
+            `userBookRepeat`.`id` AS `userBookRepeat_id`,
+            `userBookRepeat`.`segment` AS `userBookRepeat_segment`,
+            `userBookRepeat`.`update_time` AS`userBookRepeat_update_time`,
+            (SELECT COUNT(*) FROM `t_user_book_repeat_like` AS `userBookRepeatLike` WHERE `userBookRepeatLike`.`del_flag` = FALSE AND `userBookRepeatLike`.`user_book_repeat_id` = #{_parameter}) AS `userBookRepeat_like`,
+            `book`.`id` AS `book_id`,
+            `book`.`name` AS `book_name`,
+            `book`.`icon` AS `book_icon`,
+            `book`.`outline` AS `book_outline`
+        FROM
+            `t_user_book_repeat` AS `userBookRepeat`
+        LEFT JOIN
+            (SELECT * FROM `t_user_book` AS `userBook` WHERE `userBook`.`del_flag` = FALSE ) AS `userBook` ON `userBook`.`id` = `userBookRepeat`.`user_book_id`
+		LEFT JOIN
+			(SELECT * FROM `t_user` AS `user` WHERE `user`.`del_flag` = FALSE) AS `user` ON `user`.`id` = `userBook`.`user_id`
+        LEFT JOIN
+            (SELECT * FROM `t_book` AS `book` WHERE `book`.`del_flag` = FALSE ) AS `book` ON `book`.`id` = `userBook`.`book_id`
+        WHERE
+            `userBookRepeat`.`del_flag` = FALSE
+            AND `userBook`.`del_flag` = FALSE
+            AND `userBookRepeat`.`id` = #{_parameter}
+        ORDER BY
+            `userBookRepeat`.`create_time` DESC
+    </select>
+
+    <!--用户绘本跟读点赞数量统计-->
+    <select id="getUserBookRepeatLikeCount" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        SELECT
+            COUNT(*)
+        FROM
+            `t_user_book_repeat_like` AS `userBookRepeatLike`
+        WHERE
+            `userBookRepeatLike`.`del_flag` = FALSE
+                AND `userBookRepeatLike`.`user_book_repeat_id` = #{_parameter}
+        ORDER BY
+            `userBookRepeatLike`.`create_time` DESC
+    </select>
+
+    <!--用户课程跟读点赞数量统计-->
+    <select id="getUserCourseRepeatLikeCount" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        SELECT
+            COUNT(*)
+        FROM
+            `t_user_course_repeat_like` AS `userCourseRepeatLike`
+        WHERE
+            `userCourseRepeatLike`.`del_flag` = FALSE
+            AND `userCourseRepeatLike`.`user_course_repeat_id` = #{_parameter}
+        ORDER BY
+            `userCourseRepeatLike`.`create_time` DESC
+    </select>
+
+    <!--新增用户绘本跟读点赞信息-->
+    <insert id="insUserBookRepeatLike">
+        INSERT INTO `t_user_book_repeat_like`(
+            `user_id`,
+            `user_book_repeat_id`
+        )VALUES(
+            #{user.id},
+            #{userBookRepeat.id}
+        )
+    </insert>
+
+    <!--新增用户课程跟读点赞信息-->
+    <insert id="insUserCourseRepeatLike">
+        INSERT INTO `t_user_course_repeat_like`(
+            `user_id`,
+            `user_course_repeat_id`
+        )VALUES(
+            #{user.id},
+            #{userCourseRepeat.id}
+        )
+    </insert>
+
+    <!--用户绘本跟读是否已被某个用户点赞-->
+    <select id="userBookRepeatLikeExist" resultType="UserBookRepeatLike">
+        SELECT
+            `userBookRepeatLike`.`id`
+        FROM
+            `t_user_book_repeat_like` AS `userBookRepeatLike`
+        WHERE
+            `userBookRepeatLike`.`del_flag` = FALSE
+            AND `userBookRepeatLike`.`user_id` = #{user.id}
+            AND `userBookRepeatLike`.`user_book_repeat_id` = #{userBookRepeat.id}
+        ORDER BY
+            `userBookRepeatLike`.`create_time` DESC
+    </select>
+
+    <!--用户课程跟读是否已被某个用户点赞-->
+    <select id="userCourseRepeatLikeExist" resultType="UserCourseRepeatLike">
+        SELECT
+            `userCourseRepeatLike`.`id`
+        FROM
+            `t_user_course_repeat_like` AS `userCourseRepeatLike`
+        WHERE
+            `userCourseRepeatLike`.`del_flag` = FALSE
+            AND `userCourseRepeatLike`.`user_id` = #{user.id}
+            AND `userCourseRepeatLike`.`user_course_repeat_id` = #{userCourseRepeat.id}
+        ORDER BY
+            `userCourseRepeatLike`.`create_time` DESC
+    </select>
+
+    <!--更新用户绘本跟读点赞信息-->
+    <update id="updateUserBookRepeatLike">
+        UPDATE `t_user_book_repeat_like`
+            <set>
+                <if test="user != null and user.id != null">
+                    `user_id` = #{user.id},
+                </if>
+                <if test="userBookRepeat != null and userBookRepeat.id != null">
+                    `user_book_repeat_id` = #{userBookRepeat.id},
+                </if>
+                <if test="delFlag != null">
+                    `del_flag` = #{delFlag}
+                </if>
+            </set>
+        WHERE `id` = #{id}
+    </update>
+
+    <!--更新用户课程跟读点赞信息-->
+    <update id="updateUserCourseRepeatLike">
+        UPDATE `t_user_course_repeat_like`
+        <set>
+            <if test="user != null and user.id != null">
+                `user_id` = #{user.id},
+            </if>
+            <if test="userCourseRepeat != null and userCourseRepeat.id != null">
+                `user_course_repeat_id` = #{userCourseRepeat.id},
+            </if>
+            <if test="delFlag != null">
+                `del_flag` = #{delFlag}
+            </if>
+        </set>
+        WHERE `id` = #{id}
+    </update>
+
+
+    <resultMap id="getUserBookRepeatCommentListResultMap" type="UserBookRepeatComment">
+        <id property="id" column="userBookRepeatCommentFirst_id" />
+        <result property="content" column="userBookRepeatCommentFirst_content" typeHandler="net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler" />
+        <result property="createTime" column="userBookRepeatCommentFirst_create_time" />
+        <association property="user" javaType="User">
+            <id property="id" column="userFirst_id" />
+            <result property="head" column="userFirst_head" />
+            <result property="nickname" column="userFirst_nickname" />
+        </association>
+        <collection property="replyList" ofType="UserBookRepeatComment">
+            <id property="id" column="userBookRepeatCommentLess_id" />
+            <result property="content" column="userBookRepeatCommentLess_content" typeHandler="net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler" />
+            <result property="createTime" column="userBookRepeatCommentLess_create_time" />
+            <association property="user" notNullColumn="userBookRepeatCommentLess_id" javaType="User">
+                <id property="id" column="userLess_id" />
+                <result property="head" column="userLess_head" />
+                <result property="nickname" column="userLess_nickname" />
+            </association>
+        </collection>
+    </resultMap>
+
+    <!--获取用户绘本跟读评论列表-->
+    <select id="getUserBookRepeatCommentList" parameterType="java.lang.Integer" resultMap="getUserBookRepeatCommentListResultMap">
+        SELECT
+            `userFirst`.`id` AS `userFirst_id`,
+            `userFirst`.`head` AS `userFirst_head`,
+            `userFirst`.`nickname` AS `userFirst_nickname`,
+            `userBookRepeatCommentFirst`.`id` AS `userBookRepeatCommentFirst_id`,
+            `userBookRepeatCommentFirst`.`content` AS `userBookRepeatCommentFirst_content`,
+            `userBookRepeatCommentFirst`.`create_time` AS `userBookRepeatCommentFirst_create_time`,
+            `userLess`.`id` AS `userLess_id`,
+            `userLess`.`head` AS `userLess_head`,
+            `userLess`.`nickname` AS `userLess_nickname`,
+            `userBookRepeatCommentLess`.`id` AS `userBookRepeatCommentLess_id`,
+            `userBookRepeatCommentLess`.`content` AS `userBookRepeatCommentLess_content`,
+            `userBookRepeatCommentLess`.`create_time` AS `userBookRepeatCommentLess_create_time`
+        FROM
+             (
+                SELECT
+                    *
+                FROM
+                    `t_user_book_repeat_comment` AS `userBookRepeatComment`
+                WHERE
+                    `userBookRepeatComment`.`del_flag` = FALSE AND `userBookRepeatComment`.`quote_id` = - 1 AND `userBookRepeatComment`.`user_book_repeat_id` = #{userBookRepeatId} ORDER BY `userBookRepeatComment`.`create_time` DESC LIMIT #{page.offset},#{page.limit}
+             ) AS `userBookRepeatCommentFirst`
+        LEFT JOIN
+            (SELECT * FROM `t_user` AS `user` WHERE `user`.`del_flag` = FALSE) AS `userFirst` ON `userFirst`.`id` = `userBookRepeatCommentFirst`.`user_id`
+        LEFT JOIN
+             (
+                SELECT
+                    *
+                FROM
+                    `t_user_book_repeat_comment` AS temp
+                WHERE
+                    temp.del_flag = FALSE
+             ) AS `userBookRepeatCommentLess` ON `userBookRepeatCommentLess`.`quote_id` = `userBookRepeatCommentFirst`.`id`
+        LEFT JOIN
+            (SELECT * FROM `t_user` AS `user` WHERE `user`.`del_flag` = FALSE) AS `userLess` ON `userLess`.`id` = `userBookRepeatCommentLess`.`user_id`
+        ORDER BY `userBookRepeatCommentFirst`.`create_time` DESC
+    </select>
+
+
+
+
+
+
+
+
+    <resultMap id="getUserCourseRepeatCommentListResultMap" type="UserCourseRepeatComment">
+        <id property="id" column="userCourseRepeatCommentFirst_id" />
+        <result property="content" column="userCourseRepeatCommentFirst_content" typeHandler="net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler" />
+        <result property="createTime" column="userCourseRepeatCommentFirst_create_time" />
+        <association property="user" javaType="User">
+            <id property="id" column="userFirst_id" />
+            <result property="head" column="userFirst_head" />
+            <result property="nickname" column="userFirst_nickname" />
+            <association property="teacher" javaType="Teacher">
+                <id property="id" column="teacherFirst_id" />
+                <result property="realname" column="teacherFirst_realname" />
+            </association>
+        </association>
+        <collection property="replyList" ofType="UserCourseRepeatComment">
+            <id property="id" column="userCourseRepeatCommentLess_id" />
+            <result property="content" column="userCourseRepeatCommentLess_content" typeHandler="net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler" />
+            <result property="createTime" column="userCourseRepeatCommentLess_create_time" />
+            <association notNullColumn="userCourseRepeatCommentLess_id" property="user" javaType="User">
+                <id property="id" column="userLess_id" />
+                <result property="head" column="userLess_head" />
+                <result property="nickname" column="userLess_nickname" />
+                <association property="teacher" javaType="Teacher">
+                    <id property="id" column="teacherLess_id" />
+                    <result property="realname" column="teacherLess_realname" />
+                </association>
+            </association>
+        </collection>
+    </resultMap>
+
+    <!--获取用户课程跟读评论列表-->
+    <select id="getUserCourseRepeatCommentList" parameterType="java.util.HashMap" resultMap="getUserCourseRepeatCommentListResultMap">
+        SELECT
+            `userFirst`.`id` AS `userFirst_id`,
+            `userFirst`.`head` AS `userFirst_head`,
+            `userFirst`.`nickname` AS `userFirst_nickname`,
+            IFNULL(`teacherFirst`.`id`,-1) AS `teacherFirst_id`,
+            IFNULL(`teacherFirst`.`realname`,'') AS `teacherFirst_realname`,
+            `userCourseRepeatCommentFirst`.`id` AS `userCourseRepeatCommentFirst_id`,
+            `userCourseRepeatCommentFirst`.`content` AS `userCourseRepeatCommentFirst_content`,
+            `userCourseRepeatCommentFirst`.`create_time` AS `userCourseRepeatCommentFirst_create_time`,
+            `userLess`.`id` AS `userLess_id`,
+            `userLess`.`head` AS `userLess_head`,
+            `userLess`.`nickname` AS `userLess_nickname`,
+            IFNULL(`teacherLess`.`id`,-1) AS `teacherLess_id`,
+            IFNULL(`teacherLess`.`realname`,'') AS `teacherLess_realname`,
+            `userCourseRepeatCommentLess`.`id` AS `userCourseRepeatCommentLess_id`,
+            `userCourseRepeatCommentLess`.`content` AS `userCourseRepeatCommentLess_content`,
+            `userCourseRepeatCommentLess`.`create_time` AS `userCourseRepeatCommentLess_create_time`
+        FROM
+            (SELECT userCourseRepeatComment.* FROM `t_user_course_repeat_comment` AS `userCourseRepeatComment` LEFT JOIN (SELECT * FROM t_user_course_repeat AS userCourseRepeat WHERE userCourseRepeat.del_flag = FALSE ) AS userCourseRepeat ON userCourseRepeat.id = userCourseRepeatComment.user_course_repeat_id LEFT JOIN (SELECT * FROM t_user_course AS userCourse WHERE userCourse.del_flag = FALSE ) AS userCourse ON userCourse.id = userCourseRepeat.user_course_id LEFT JOIN (SELECT * FROM t_course AS course WHERE course.del_flag = FALSE ) AS course ON course.id = userCourse.course_id LEFT JOIN (SELECT * FROM t_teacher AS teacher WHERE teacher.del_flag = FALSE ) AS teacher ON teacher.id = course.teacher_id WHERE `userCourseRepeatComment`.`del_flag` = FALSE AND `userCourseRepeatComment`.`quote_id` = -1 AND `userCourseRepeatComment`.`user_course_repeat_id` = #{userCourseRepeatId} ORDER BY teacher.id DESC,`userCourseRepeatComment`.`create_time` DESC LIMIT #{page.offset},#{page.limit} ) AS `userCourseRepeatCommentFirst`
+        LEFT JOIN
+            (SELECT * FROM `t_user` AS `user` WHERE `user`.`del_flag` = FALSE) AS `userFirst` ON `userFirst`.`id` = `userCourseRepeatCommentFirst`.`user_id`
+        LEFT JOIN
+            (SELECT * FROM `t_teacher` AS teacherFirst WHERE teacherFirst.del_flag = FALSE ) AS `teacherFirst` ON `teacherFirst`.`user_id` = `userFirst`.`id`
+        LEFT JOIN
+            (SELECT * FROM `t_user_course_repeat_comment` AS `temp` WHERE `temp`.`del_flag` = FALSE) AS `userCourseRepeatCommentLess` ON `userCourseRepeatCommentLess`.`quote_id` = `userCourseRepeatCommentFirst`.`id`
+        LEFT JOIN
+            (SELECT * FROM `t_user` AS `user` WHERE `user`.`del_flag` = FALSE) AS `userLess` ON `userLess`.`id` = `userCourseRepeatCommentLess`.`user_id`
+        LEFT JOIN
+            (SELECT * FROM `t_teacher` AS teacherLess WHERE teacherLess.del_flag = FALSE ) AS `teacherLess` ON `teacherLess`.`user_id` = `userLess`.`id`
+        ORDER BY `teacherFirst`.`id` DESC,`userCourseRepeatCommentFirst`.`create_time` DESC
+    </select>
+
+    <!--获取用户课程跟读，教师的评论列表-->
+    <select id="getUserCourseRepeatTeacherCommentList" parameterType="java.lang.Integer" resultMap="getUserCourseRepeatCommentListResultMap">
+        SELECT
+            `userFirst`.`id` AS `userFirst_id`,
+            `userFirst`.`head` AS `userFirst_head`,
+            `userFirst`.`nickname` AS `userFirst_nickname`,
+            IFNULL(`teacherFirst`.`id`,-1) AS `teacherFirst_id`,
+            IFNULL(`teacherFirst`.`realname`,'') AS `teacherFirst_realname`,
+            `userCourseRepeatCommentFirst`.`id` AS `userCourseRepeatCommentFirst_id`,
+            `userCourseRepeatCommentFirst`.`content` AS `userCourseRepeatCommentFirst_content`,
+            `userCourseRepeatCommentFirst`.`create_time` AS `userCourseRepeatCommentFirst_create_time`,
+            `userLess`.`id` AS `userLess_id`,
+            `userLess`.`head` AS `userLess_head`,
+            `userLess`.`nickname` AS `userLess_nickname`,
+            IFNULL(`teacherLess`.`id`,-1) AS `teacherLess_id`,
+            IFNULL(`teacherLess`.`realname`,'') AS `teacherLess_realname`,
+            `userCourseRepeatCommentLess`.`id` AS `userCourseRepeatCommentLess_id`,
+            `userCourseRepeatCommentLess`.`content` AS `userCourseRepeatCommentLess_content`,
+            `userCourseRepeatCommentLess`.`create_time` AS `userCourseRepeatCommentLess_create_time`
+        FROM
+            (SELECT userCourseRepeatComment.* FROM `t_user_course_repeat_comment` AS `userCourseRepeatComment` LEFT JOIN (SELECT * FROM t_user_course_repeat AS userCourseRepeat WHERE userCourseRepeat.del_flag = FALSE ) AS userCourseRepeat ON userCourseRepeat.id = userCourseRepeatComment.user_course_repeat_id LEFT JOIN (SELECT * FROM t_user_course AS userCourse WHERE userCourse.del_flag = FALSE ) AS userCourse ON userCourse.id = userCourseRepeat.user_course_id LEFT JOIN (SELECT * FROM t_course AS course WHERE course.del_flag = FALSE ) AS course ON course.id = userCourse.course_id LEFT JOIN (SELECT * FROM t_teacher AS teacher WHERE teacher.del_flag = FALSE ) AS teacher ON teacher.id = course.teacher_id WHERE `userCourseRepeatComment`.`del_flag` = FALSE AND `userCourseRepeatComment`.`quote_id` = -1 AND `userCourseRepeatComment`.`user_course_repeat_id` = #{_parameter} AND userCourseRepeatComment.user_id = teacher.user_id ) AS `userCourseRepeatCommentFirst`
+        LEFT JOIN
+            (SELECT * FROM `t_user` AS `user` WHERE `user`.`del_flag` = FALSE) AS `userFirst` ON `userFirst`.`id` = `userCourseRepeatCommentFirst`.`user_id`
+        LEFT JOIN
+            (SELECT * FROM `t_teacher` AS teacher WHERE teacher.del_flag = FALSE ) AS `teacherFirst` ON `teacherFirst`.`user_id` = `userFirst`.`id`
+        LEFT JOIN
+            (SELECT * FROM `t_user_course_repeat_comment` AS `temp` WHERE `temp`.`del_flag` = FALSE) AS `userCourseRepeatCommentLess` ON `userCourseRepeatCommentLess`.`quote_id` = `userCourseRepeatCommentFirst`.`id`
+        LEFT JOIN
+            (SELECT * FROM `t_user` AS `user` WHERE `user`.`del_flag` = FALSE) AS `userLess` ON `userLess`.`id` = `userCourseRepeatCommentLess`.`user_id`
+        LEFT JOIN
+            (SELECT * FROM `t_teacher` AS teacher WHERE teacher.del_flag = FALSE ) AS `teacherLess` ON `teacherLess`.`user_id` = `userLess`.`id`
+        ORDER BY `teacherFirst`.`id` DESC,`userCourseRepeatCommentFirst`.`create_time` DESC
+    </select>
+
+    <resultMap id="teacherCommentResultMap" type="UserCourseRepeatComment">
+        <id property="id" column="userCourseRepeatComment_id" />
+        <result property="content" column="userCourseRepeatComment_content" typeHandler="net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler" />
+        <result property="createTime" column="userCourseRepeatComment_create_time" />
+        <association property="user" javaType="User">
+            <id property="id" column="user_id" />
+            <result property="head" column="user_head" />
+            <result property="nickname" column="user_nickname" />
+            <association property="teacher" javaType="Teacher">
+                <id property="id" column="teacher_id" />
+                <result property="realname" column="teacher_realname" />
+            </association>
+        </association>
+        <association property="userCourseRepeat" javaType="UserCourseRepeat">
+            <id property="id" column="userCourseRepeat_id" />
+        </association>
+    </resultMap>
+
+    <!--获取教师评论信息-->
+    <select id="teacherComment" parameterType="java.lang.Integer" resultMap="teacherCommentResultMap">
+        SELECT
+            `user`.`id` AS `user_id`,
+            `user`.`head` AS `user_head`,
+            `user`.`nickname` AS `user_nickname`,
+            IFNULL(`teacher`.`id`,-1) AS `teacher_id`,
+            IFNULL(`teacher`.`realname`,'') AS `teacher_realname`,
+            `userCourseRepeatComment`.`id` AS `userCourseRepeatComment_id`,
+             `userCourseRepeatComment`.`userCourseRepeat_id` AS `userCourseRepeat_id`,
+            `userCourseRepeatComment`.`content` AS `userCourseRepeatComment_content`,
+            `userCourseRepeatComment`.`create_time` AS `userCourseRepeatComment_create_time`
+        FROM
+            (SELECT `userCourseRepeatComment`.*,`userCourseRepeat`.`id` AS `userCourseRepeat_id` FROM `t_user_course_repeat_comment` AS `userCourseRepeatComment` LEFT JOIN (SELECT * FROM t_user_course_repeat AS userCourseRepeat WHERE userCourseRepeat.del_flag = FALSE ) AS userCourseRepeat ON userCourseRepeat.id = userCourseRepeatComment.user_course_repeat_id LEFT JOIN (SELECT * FROM t_user_course AS userCourse WHERE userCourse.del_flag = FALSE ) AS userCourse ON userCourse.id = userCourseRepeat.user_course_id LEFT JOIN (SELECT * FROM t_course AS course WHERE course.del_flag = FALSE ) AS course ON course.id = userCourse.course_id LEFT JOIN t_teacher AS teacher ON teacher.id = course.teacher_id WHERE `userCourseRepeatComment`.`del_flag` = FALSE AND `userCourseRepeatComment`.`quote_id` = -1 AND userCourseRepeatComment.user_id = teacher.user_id AND userCourse.user_id = #{_parameter} ) AS `userCourseRepeatComment`
+        LEFT JOIN
+            (SELECT * FROM `t_user` AS `user` WHERE `user`.`del_flag` = FALSE) AS `user` ON `user`.`id` = `userCourseRepeatComment`.`user_id`
+        LEFT JOIN
+            (SELECT * FROM `t_teacher` AS teacher WHERE teacher.del_flag = FALSE ) AS `teacher` ON `teacher`.`user_id` = `user`.`id`
+        ORDER BY
+            `userCourseRepeatComment_create_time` DESC
+    </select>
+
+    <!--获取用户课程跟读评论列表-->
+    <select id="getUserCourseRepeatComment" parameterType="java.lang.Integer" resultType="UserCourseRepeatComment">
+        SELECT
+            `userCourseRepeatComment`.`id`,
+            `userCourseRepeatComment`.`quote_id` AS `quote.id`,
+            `userCourseRepeatComment`.`user_id` AS `user.id`,
+            `userCourseRepeatComment`.`user_course_repeat_id` AS `userCourseRepeat.id`,
+            `userCourseRepeatComment`.`content`,
+            `userCourseRepeatComment`.`del_flag`,
+            `userCourseRepeatComment`.`create_time`,
+            `userCourseRepeatComment`.`update_time`
+        FROM
+            `t_user_course_repeat_comment` AS `userCourseRepeatComment`
+        WHERE
+            `userCourseRepeatComment`.`del_flag` = FALSE
+            AND `userCourseRepeatComment`.`id` = #{_parameter}
+        ORDER BY
+            `userCourseRepeatComment`.`create_time` DESC
+    </select>
+
+    <!--获取用户绘本跟读评论列表-->
+    <select id="getUserBookRepeatComment" parameterType="java.lang.Integer" resultType="UserBookRepeatComment">
+        SELECT
+            `userBookRepeatComment`.`id`,
+            `userBookRepeatComment`.`quote_id` AS `quote.id`,
+            `userBookRepeatComment`.`user_id` AS `user.id`,
+            `userBookRepeatComment`.`user_book_repeat_id` AS `userBookRepeat.id`,
+            `userBookRepeatComment`.`content`,
+            `userBookRepeatComment`.`del_flag`,
+            `userBookRepeatComment`.`create_time`,
+            `userBookRepeatComment`.`update_time`
+        FROM
+            `t_user_book_repeat_comment` AS `userBookRepeatComment`
+        WHERE
+            `userBookRepeatComment`.`del_flag` = FALSE
+            AND `userBookRepeatComment`.`id` = #{_parameter}
+        ORDER BY
+            `userBookRepeatComment`.`create_time` DESC
+    </select>
+
+    <!--新增用户课程跟读评论-->
+    <insert id="insUserCourseRepeatComment" keyProperty="id">
+        INSERT INTO `t_user_course_repeat_comment`(
+            `user_id`,
+            `user_course_repeat_id`,
+            `content`
+        )VALUES(
+            #{user.id},
+            #{userCourseRepeat.id},
+            #{content,typeHandler=net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler}
+        )
+    </insert>
+
+    <!--新增用户课程跟读评论子评论信息-->
+    <insert id="insUserCourseRepeatCommentReply">
+        INSERT INTO `t_user_course_repeat_comment`(
+            `user_id`,
+            `quote_id`,
+            `user_course_repeat_id`,
+            `content`
+        )VALUES(
+            #{user.id},
+            #{quote.id},
+            #{userCourseRepeat.id},
+            #{content,typeHandler=net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler}
+        )
+    </insert>
+
+    <!--新增用户绘本跟读评论-->
+    <insert id="insUserBookRepeatComment" keyProperty="id">
+        INSERT INTO `t_user_book_repeat_comment`(
+            `user_id`,
+            `user_book_repeat_id`,
+            `content`
+        )VALUES(
+            #{user.id},
+            #{userBookRepeat.id},
+            #{content,typeHandler=net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler}
+        )
+    </insert>
+
+    <!--新增用户绘本跟读评论子评论信息-->
+    <insert id="insUserBookRepeatCommentReply">
+        INSERT INTO `t_user_book_repeat_comment`(
+            `user_id`,
+            `quote_id`,
+            `user_book_repeat_id`,
+            `content`
+        )VALUES(
+            #{user.id},
+            #{quote.id},
+            #{userBookRepeat.id},
+            #{content,typeHandler=net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler}
+        )
+    </insert>
+
+    <resultMap id="getUserBookRepeatRankResultMap" type="UserBookRepeat">
+        <id property="id" column="userBookRepeat_id" />
+        <result property="createTime" column="userBookRepeat_update_time" />
+        <result property="like" column="userBookRepeat_like" />
+        <association property="userBook" javaType="UserBook">
+            <association property="user" javaType="User">
+                <id property="id" column="user_id" />
+                <result property="nickname" column="user_nickname" />
+                <result property="head" column="user_head" />
+            </association>
+        </association>
+    </resultMap>
+
+    <!--绘本跟读，跟读榜信息-->
+    <select id="getUserBookRepeatRank" parameterType="java.lang.Integer" resultMap="getUserBookRepeatRankResultMap">
+        SELECT
+            `userBookRepeat`.`id` AS `userBookRepeat_id`,
+            `userBookRepeat`.`update_time` AS `userBookRepeat_update_time`,
+            COUNT(`userBookRepeatLike`.`id`) AS `userBookRepeat_like`,
+            `user`.`id` AS `user_id`,
+            `user`.`nickname` AS `user_nickname`,
+            `user`.`head` AS `user_head`
+        FROM
+            `t_user_book_repeat` AS `userBookRepeat`
+        LEFT JOIN (SELECT * FROM `t_user_book_repeat_like` AS `temp` WHERE `temp`.`del_flag` = FALSE) AS `userBookRepeatLike` ON `userBookRepeatLike`.`user_book_repeat_id` = `userBookRepeat`.`id`
+        LEFT JOIN (SELECT * FROM `t_user_book` AS userBook WHERE userBook.del_flag = FALSE ) AS `userBook` ON `userBook`.`id` = `userBookRepeat`.`user_book_id`
+        LEFT JOIN (SELECT * FROM `t_user` AS `user` WHERE `user`.`del_flag` = FALSE) AS `user` ON `user`.`id` = `userBook`.`user_id`
+        WHERE
+            `userBookRepeat`.`del_flag` = FALSE
+            AND `userBook`.`del_flag` = FALSE
+            AND `userBook`.`book_id` = #{_parameter}
+        GROUP BY
+            `userBookRepeat`.`id`
+        ORDER BY
+            /*`userBookRepeat_like` DESC, */`userBookRepeat_update_time`DESC
+
+    </select>
+
+    <!--新增注册用户-->
+    <insert id="register" keyProperty="id">
+        INSERT INTO `t_user` (
+            `phone`,
+            `password`
+        ) VALUES (
+            #{phone},
+            #{password}
+        )
+    </insert>
+
+    <!--用户某一课程是否已跟读过-->
+    <select id="courseRepeatExist" resultType="java.lang.Integer">
+        SELECT
+            `userCourseRepeat`.`id`
+        FROM
+            `t_user_course_repeat` AS `userCourseRepeat`
+        WHERE
+            `userCourseRepeat`.`del_flag` = FALSE
+            AND `userCourseRepeat`.`user_course_id` = #{userCourse.id}
+            AND `userCourseRepeat`.`book_id` = #{book.id}
+            AND DATE_FORMAT(`userCourseRepeat`.`create_time`,'%Y%m%d') = DATE_FORMAT(NOW(),'%Y%m%d')
+        ORDER BY
+            `userCourseRepeat`.`create_time` DESC
+    </select>
+
+    <resultMap id="getUserCourseRepeatListResultMap" type="UserCourseRepeat">
+        <association property="userCourse" javaType="UserCourse">
+            <id property="id" column="userCourse_id" />
+            <association property="course" javaType="Course">
+                <id property="id" column="course_id" />
+                <result property="name" column="course_name" />
+                <result property="icon" column="course_icon" typeHandler="net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler" />
+                <result property="tag" column="course_tag" typeHandler="net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler" />
+                <result property="fit" column="course_fit" />
+                <result property="cycle" column="course_cycle" />
+                <result property="status" column="course_status" />
+            </association>
+        </association>
+    </resultMap>
+
+    <!--获取用户课程跟读列表-->
+    <select id="getUserCourseRepeatList" parameterType="java.lang.Integer" resultMap="getUserCourseRepeatListResultMap">
+        SELECT
+            `userCourse`.`id` AS userCourse_id,
+            `course`.`id` AS course_id,
+            `course`.`name` AS course_name,
+            `course`.`icon` AS course_icon,
+            `course`.`tag` AS course_tag,
+            `course`.`fit` AS course_fit,
+            (SELECT SUM(`cycle`) FROM `t_course_detail` AS `courseDetail` WHERE `courseDetail`.`del_flag` = FALSE AND `courseDetail`.`course_id` = `course`.`id`) AS `course_cycle`,
+            (IF((NOW() >= `course`.`start_time`),IF((DATE_ADD(`course`.`start_time`,INTERVAL (SELECT SUM(`cycle`) FROM `t_course_detail` AS `courseDetail` WHERE `courseDetail`.`del_flag` = FALSE AND `courseDetail`.`course_id` = `course`.`id`) DAY) >= NOW()),1,2),0)) AS `course_status`
+        FROM
+            `t_user_course_repeat` AS `userCourseRepeat`
+        LEFT JOIN (SELECT * FROM `t_user_course` AS userCourse WHERE userCourse.del_flag = FALSE ) AS `userCourse` ON `userCourse`.`id` = `userCourseRepeat`.`user_course_id`
+        LEFT JOIN (SELECT * FROM `t_course` AS course WHERE course.del_flag = FALSE ) AS `course` ON `course`.`id` = `userCourse`.`course_id`
+        WHERE
+            `userCourseRepeat`.`user_course_id` IN (SELECT `userCourse`.`id` FROM `t_user_course` AS `userCourse` WHERE `userCourse`.`user_id` = #{_parameter} AND `userCourse`.`del_flag` = FALSE)
+            AND `userCourseRepeat`.`del_flag` = FALSE
+        GROUP BY
+            `userCourseRepeat`.`user_course_id`
+    </select>
+
+    <resultMap id="getUserCourseBookRepeatListResultMap" type="java.util.HashMap">
+        <id property="id" column="book_id" />
+        <result property="name" column="book_name" />
+        <result property="icon" column="book_icon" typeHandler="net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler" />
+        <result property="fit" column="book_fit" />
+        <result property="tag" column="book_tag" typeHandler="net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler" />
+        <collection property="repeat" javaType="java.util.ArrayList" ofType="java.util.HashMap">
+            <id property="id" column="userCourseRepeat_id" />
+            <result property="date" column="userCourseRepeat_create_time" javaType="java.util.Date" />
+        </collection>
+    </resultMap>
+
+    <!--获取课程下的绘本跟读列表-->
+    <select id="getUserCourseBookRepeatList" parameterType="java.lang.Integer" resultMap="getUserCourseBookRepeatListResultMap">
+        SELECT
+            `userCourseRepeat`.`id` AS `userCourseRepeat_id`,
+            DATE_FORMAT(`userCourseRepeat`.`create_time`,"%Y-%m-%d") AS `userCourseRepeat_create_time`,
+            `book`.`id` AS `book_id`,
+            `book`.`name` AS `book_name`,
+            `book`.`icon` AS `book_icon`,
+            `book`.`fit` AS `book_fit`,
+            `book`.`tag` AS `book_tag`
+        FROM
+            `t_user_course_repeat` AS `userCourseRepeat`
+        LEFT JOIN
+            (SELECT * FROM `t_book` AS `book` WHERE `book`.`del_flag` = FALSE ) AS `book` ON `book`.`id` = `userCourseRepeat`.`book_id`
+        WHERE
+            `userCourseRepeat`.`del_flag` = FALSE
+            AND `userCourseRepeat`.`user_course_id` = #{_parameter}
+        ORDER BY
+            `userCourseRepeat`.`create_time` DESC
+    </select>
+
+    <resultMap id="getUserCourseRepeatResultMap" type="UserCourseRepeat">
+        <id property="id" column="userCourseRepeat_id" />
+        <result property="segment" column="userCourseRepeat_segment" typeHandler="net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler" />
+        <result property="like" column="userCourseRepeat_like" />
+        <result property="createTime" column="userCourseRepeat_update_time" />
+        <association property="userCourse" javaType="UserCourse">
+            <association property="course" javaType="Course">
+                <id property="id" column="course_id" />
+                <result property="name" column="course_name" />
+                <result property="icon" column="course_icon" typeHandler="net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler" />
+                <!--<result property="outline" column="course_outline" />-->
+            </association>
+            <association property="user" javaType="User">
+                <id property="id" column="user_id" />
+                <result property="head" column="user_head" />
+                <result property="nickname" column="user_nickname" />
+                <result property="signature" column="user_signature" />
+            </association>
+        </association>
+        <association property="book" javaType="Book">
+            <id property="id" column="userCourseRepeat_book_id" />
+        </association>
+    </resultMap>
+
+    <!--用户课程跟读-->
+    <select id="getUserCourseRepeat" parameterType="java.lang.Integer" resultMap="getUserCourseRepeatResultMap">
+        SELECT
+            `course`.`id` AS `course_id`,
+            `course`.`name` AS `course_name`,
+            `course`.`icon` AS `course_icon`,
+            /*`course`.`outline` AS `course_outline`,*/
+            `user`.`id` AS `user_id`,
+            `user`.`head` AS `user_head`,
+            `user`.`nickname` AS `user_nickname`,
+            `user`.`signature` AS `user_signature`,
+            `userCourseRepeat`.`id` AS `userCourseRepeat_id`,
+            `userCourseRepeat`.`book_id` AS `userCourseRepeat_book_id`,
+            `userCourseRepeat`.`segment` AS `userCourseRepeat_segment`,
+            DATE_FORMAT(`userCourseRepeat`.`update_time`,"%Y-%m-%d") AS `userCourseRepeat_update_time`,
+            (SELECT COUNT(*) FROM `t_user_course_repeat_like` AS `userCourseRepeatLike` WHERE `userCourseRepeatLike`.`del_flag` = FALSE AND `userCourseRepeatLike`.`user_course_repeat_id` = `userCourseRepeat`.`id`) AS `userCourseRepeat_like`
+        FROM
+            `t_user_course_repeat` AS `userCourseRepeat`
+        LEFT JOIN
+            (SELECT * FROM `t_user_course` AS `userCourse` WHERE `userCourse`.`del_flag` = FALSE ) AS `userCourse` ON `userCourse`.`id` = `userCourseRepeat`.`user_course_id`
+        LEFT JOIN
+            (SELECT * FROM `t_user` AS `user` WHERE `user`.`del_flag` = FALSE ) AS `user` ON `user`.`id` = `userCourse`.`user_id`
+        LEFT JOIN
+            (SELECT * FROM `t_course` AS `course` WHERE `course`.`del_flag` = FALSE ) AS `course` ON `course`.`id` = `userCourse`.`course_id`
+        WHERE
+            `userCourseRepeat`.`del_flag` = FALSE
+            AND `userCourseRepeat`.`id` = #{_parameter}
+        ORDER BY
+            `userCourseRepeat`.`create_time` DESC
+    </select>
+
+
+</mapper>

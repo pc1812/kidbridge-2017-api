@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.$51zhiyuan.development.kidbridge.dao.article">
+
+    <sql id="base">
+        `article`.`id`,
+        `article`.`title`,
+        `article`.`content`,
+        `article`.`del_flag`,
+        `article`.`create_time`,
+        `article`.`update_time`
+    </sql>
+
+    <!--获取文章详情信息-->
+    <select id="get" resultType="Article">
+        SELECT
+            `article`.`id`,
+            `article`.`title`,
+            `article`.`content`,
+            `article`.`create_time`,
+            `article`.`update_time`
+        FROM
+            `t_article` AS `article`
+        WHERE
+            `article`.`del_flag` = FALSE AND `article`.`id` = #{id}
+        ORDER BY
+            `article`.`create_time` DESC
+    </select>
+
+</mapper>

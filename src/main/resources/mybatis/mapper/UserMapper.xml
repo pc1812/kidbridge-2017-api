@@ -148,7 +148,7 @@
             `user`.`head`,
             `user`.`bonus`,
             `user`.`nickname`,
-            TIMESTAMPDIFF(YEAR,`user`.`birthday`,NOW()) AS `age`,
+            IF(`user`.`birthday`='0000-00-00','未知',TIMESTAMPDIFF(YEAR,`user`.`birthday`,NOW())) AS `age`,
             `user`.`signature`,
             `user`.`balance`
         FROM

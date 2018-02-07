@@ -17,7 +17,6 @@ import org.apache.shiro.web.util.WebUtils;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
@@ -65,11 +64,7 @@ public class KidbridgeSessionManager extends AbstractValidatingSessionManager  {
     @Override
     protected Session retrieveSession(SessionKey key) {
         Serializable sessionId = null;
-        try {
-            sessionId = this.getSessionId(key);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        sessionId = this.getSessionId(key);
         Session session = this.retrieveSession(sessionId);
         return session;
     }

@@ -15,7 +15,7 @@ public class User implements Serializable {
     private String password;
     private String head;
     private String nickname;
-    private Integer age;
+    private String age;
     private Date birthday;
     private String address;
     private Integer bonus;
@@ -105,11 +105,11 @@ public class User implements Serializable {
         this.nickname = nickname;
     }
 
-    public Integer getAge() {
+    public String getAge() {
         return age;
     }
 
-    public void setAge(Integer age) {
+    public void setAge(String age) {
         this.age = age;
     }
 

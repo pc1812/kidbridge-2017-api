@@ -154,7 +154,7 @@ public class UserService {
      * @param id
      * @return
      */
-    public User info(Integer id){
+    public Map info(Integer id){
         return this.sqlSessionTemplate.selectOne(this.namespace + "info",id);
     }
 

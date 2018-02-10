@@ -29,10 +29,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * 用户
@@ -84,15 +82,15 @@ public class UserController {
             // 如果当前用户未登录，进行登录
             subject.login(new KidbridgeSimpleLogin((String) param.get("phone"),(String) param.get("password")));
         }
-        User user = this.userService.info((int)subject.getPrincipal());
+        Map user = this.userService.info((int)subject.getPrincipal());
         // hash过的用户标识，主要用于极光推送区分用户
         data.put("id",DigestUtils.md5Hex(String.format("%s:%s",subject.getPrincipal(),Configuration.SYSTEM_SIGN_SALT)));
         // 后续会话token，每次请求必须携带
         data.put("token",subject.getSession().getId());
         // 用户头像
-        data.put("head",user.getHead());
+        data.put("head",user.get("head"));
         // 用户昵称
-        data.put("nickname",user.getNickname());
+        data.put("nickname",user.get("nickname"));
         return new Message(data);
     }
 
@@ -110,15 +108,15 @@ public class UserController {
             // 如果当前用户未登录，进行登录
             subject.login(new KidbridgeAuthLogin((String) param.get("code"),(int)param.get("type")));
         }
-        User user = this.userService.info((int)subject.getPrincipal());
+        Map user = this.userService.info((int)subject.getPrincipal());
         // hash过的用户标识，主要用于极光推送区分用户
         data.put("id",DigestUtils.md5Hex(String.format("%s:%s",subject.getPrincipal(),Configuration.SYSTEM_SIGN_SALT)));
         // 后续会话token，每次请求必须携带
         data.put("token",subject.getSession().getId());
         // 用户头像
-        data.put("head",user.getHead());
+        data.put("head",user.get("head"));
         // 用户昵称
-        data.put("nickname",user.getNickname());
+        data.put("nickname",user.get("nickname"));
         return new Message(data);
     }
 
@@ -166,11 +164,15 @@ public class UserController {
      */
     @ResponseBody
     @RequestMapping("/info")
-    Message info() {
-        User User = this.userService.info(
+    Message info() throws ParseException {
+        Map user = this.userService.info(
                 (int) SecurityUtils.getSubject().getPrincipal()
         );
-        return new Message(User);
+        if(user.get("birthday") == null){
+            Date def = new SimpleDateFormat("yyyy-MM-dd").parse("1970-01-01");
+            user.put("birthday",def);
+        }
+        return new Message(user);
     }
 
     /**
@@ -180,18 +182,18 @@ public class UserController {
     @ResponseBody
     @RequestMapping("/receiving")
     Message receiving(){
-        User user = this.userService.info(
+        Map user = this.userService.info(
                 (int) SecurityUtils.getSubject().getPrincipal()
         );
         return new Message(new HashMap(){{
             // 联系人
-            this.put("contact",user.getReceivingContact());
+            this.put("contact",user.get("receivingContact"));
             // 联系方式
-            this.put("phone",user.getReceivingPhone());
+            this.put("phone",user.get("receivingPhone"));
             // 收货区域
-            this.put("region",user.getReceivingRegion());
+            this.put("region",user.get("receivingRegion"));
             // 收货街道
-            this.put("street",user.getReceivingStreet());
+            this.put("street",user.get("receivingStreet"));
         }});
     }
 

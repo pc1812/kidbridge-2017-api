@@ -26,6 +26,8 @@ public class Configuration {
     public static final String SYSTEM_REQUEST_TOKEN = "token";
     // 版本号请求字段
     public static final String SYSTEM_REQUEST_VERSION = "version";
+    // 设备名称
+    public static final String SYSTEM_REQUEST_DEVICE = "device";
     // 时间戳请求字段
     public static final String SYSTEM_REQUEST_TIMESTAMP = "timestamp";
     // 七牛云文件上传回调接口

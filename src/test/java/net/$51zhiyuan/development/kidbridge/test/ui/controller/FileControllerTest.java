@@ -33,7 +33,7 @@ public class FileControllerTest {
 
     private Auth auth;
     private HttpClient http;
-    private final String domain = "http://127.0.0.1/file";
+    private final String domain = "http://127.0.0.1:83/file";
     private final Logger logger = LogManager.getLogger(UserControllerTest.class);
     private final KidbridgeObjectMapper kidbridgeObjectMapper = new KidbridgeObjectMapper();
     private String userToken = "cf58511544a143568dd541ab15c2277e";

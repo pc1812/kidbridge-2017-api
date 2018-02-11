@@ -1,6 +1,7 @@
 package net.$51zhiyuan.development.kidbridge.module.shiro;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import net.$51zhiyuan.development.kidbridge.exception.KidbridgeSimpleException;
 import net.$51zhiyuan.development.kidbridge.module.Configuration;
 import net.$51zhiyuan.development.kidbridge.module.Util;
 import net.$51zhiyuan.development.kidbridge.module.json.KidbridgeObjectMapper;
@@ -64,17 +65,24 @@ public class KidbridgeAuthenticationFilter extends AccessControlFilter {
         String token = request.getHeader(Configuration.SYSTEM_REQUEST_TOKEN);
         String timestamp = request.getHeader(Configuration.SYSTEM_REQUEST_TIMESTAMP);
         String version = request.getHeader(Configuration.SYSTEM_REQUEST_VERSION);
+        String device = request.getHeader(Configuration.SYSTEM_REQUEST_DEVICE);
         // 必要请求参数检查
-        if (StringUtils.isBlank(sign) || StringUtils.isBlank(timestamp) || StringUtils.isBlank(version)) {
+        if (StringUtils.isBlank(sign) || StringUtils.isBlank(timestamp) || StringUtils.isBlank(version) || StringUtils.isBlank(device)) {
             return this.onAccessDeniedHandle(servletRequest,servletResponse,new Message(MessageType.ERROR, "非法的请求参数"));
         }
-
+        if(!version.matches("\\d+\\.\\d+\\.\\d+")){
+            throw new KidbridgeSimpleException("非法的版本信息");
+        }
+        if(!(device.toLowerCase().equals("ios") || device.toLowerCase().equals("android"))){
+            return this.onAccessDeniedHandle(servletRequest,servletResponse,new Message(MessageType.ERROR, "未知的终端设备"));
+        }
         // 参数签名验证
         String validateSign = Util.sign(new HashMap(){{
             this.put("uri",uri);
             this.put("token",token);
             this.put("timestamp",timestamp);
             this.put("version",version);
+            this.put("device",device);
         }});
 
         if (!(sign.toLowerCase().equals(validateSign.toLowerCase()))) {

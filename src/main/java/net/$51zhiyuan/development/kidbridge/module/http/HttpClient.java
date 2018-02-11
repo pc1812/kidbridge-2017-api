@@ -115,14 +115,16 @@ public class HttpClient {
 
     public String doPost(String url, String token, Map param) throws IOException, CertificateException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyManagementException, KeyStoreException {
         String version = "1.0.0";
+        String device = "ios";
         String timestamp = String.valueOf(String.valueOf(System.currentTimeMillis()));
         String sign = Util.sign(new HashMap(){{
             this.put("version",version);
+            this.put("device",device);
             this.put("timestamp",timestamp);
             this.put("token",token);
             this.put("uri",new URL(url).getPath());
         }});
-        return this.doPost(url,new Header[]{new BasicHeader("version",version),new BasicHeader("timestamp",timestamp),new BasicHeader("token",token),new BasicHeader("sign",sign)}, this.kidbridgeObjectMapper.writeValueAsString(param));
+        return this.doPost(url,new Header[]{new BasicHeader("version",version),new BasicHeader("device",device),new BasicHeader("timestamp",timestamp),new BasicHeader("token",token),new BasicHeader("sign",sign)}, this.kidbridgeObjectMapper.writeValueAsString(param));
     }
 
     public String doPost(String url, String content) throws IOException, KeyManagementException, NoSuchAlgorithmException, CertificateException, KeyStoreException, UnrecoverableKeyException {

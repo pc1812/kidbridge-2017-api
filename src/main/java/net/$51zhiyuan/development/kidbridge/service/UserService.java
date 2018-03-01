@@ -1102,6 +1102,14 @@ public class UserService {
     }
 
     /**
+     * 获取用户成就水滴
+     * @return
+     */
+    public Integer getAchievementBonus(Integer userId){
+        return this.sqlSessionTemplate.selectOne(this.namespace + "getAchievementBonus",userId);
+    }
+
+    /**
      * 新增用户课程跟读评论，子评论
      * @param userId
      * @param userCourseRepeatId

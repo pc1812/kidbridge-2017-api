@@ -248,12 +248,7 @@ public class UserController {
     @ResponseBody
     @RequestMapping("/medal")
     Message medal(@RequestBody Map<String,Object> param){
-        int bonus = this.userService.get(new User(){
-            @Override
-            public Integer getId() {
-                return (int)SecurityUtils.getSubject().getPrincipal();
-            }
-        }).getBonus();
+        int bonus = this.userService.getAchievementBonus((int)SecurityUtils.getSubject().getPrincipal());
         List<Medal> medalList = this.medalService.list();
         return new Message(new HashMap(){{
             this.put("bonus",bonus); // 用户当前积分
@@ -270,12 +265,7 @@ public class UserController {
     @RequestMapping("/my")
     Message my(@RequestBody Map<String,Object> param){
         // 当前水滴信息
-        int bonus = this.userService.get(new User(){
-            @Override
-            public Integer getId() {
-                return (int)SecurityUtils.getSubject().getPrincipal();
-            }
-        }).getBonus();
+        int bonus = this.userService.getAchievementBonus((int)SecurityUtils.getSubject().getPrincipal());
         // 用户信息
         User user = this.userService.outline((int)SecurityUtils.getSubject().getPrincipal());
         user.setBonus(bonus);
@@ -342,7 +332,7 @@ public class UserController {
      */
     @ResponseBody
     @RequestMapping("/book/repeat")
-    Message book_repeat(@RequestBody Map<String,Object> param) throws JsonProcessingException {
+    Message book_repeat(@RequestBody Map<String,Object> param) {
         Map result = this.userService.bookRepeat((int)SecurityUtils.getSubject().getPrincipal(),(Map) param.get("repeat"));
         return new Message(result);
     }

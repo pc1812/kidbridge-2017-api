@@ -949,5 +949,16 @@
             `userCourseRepeat`.`create_time` DESC
     </select>
 
+    <select id="getAchievementBonus" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        SELECT
+            SUM(bill.fee)
+        FROM
+            t_bill AS bill
+        WHERE
+            bill.del_flag = FALSE
+            AND bill.user_id = #{_parameter}
+            AND bill.fee_type = 1
+            AND bill.bill_type IN (7,8,9,10)
+    </select>
 
 </mapper>

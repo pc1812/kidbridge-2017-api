@@ -952,7 +952,7 @@ public class UserService {
         CommentPush commentPush = new CommentPush();
         commentPush.setComment(userBookRepeatId, userBookRepeatComment.getId(), 0);
         commentPush.setUser(user.getId(),user.getHead(),user.getNickname());
-        commentPush.setMessage((text+(audio == null ? "" : "[音频内容]")));
+        commentPush.setMessage(((StringUtils.isBlank(text) ? "" : text)+(audio == null ? "" : "[音频内容]")));
         this.pushService.sendCommentPush(userBookRepeat.getUserBook().getUser().getId(), commentPush);
     }
 
@@ -1088,7 +1088,7 @@ public class UserService {
         CommentPush commentPush = new CommentPush();
         commentPush.setComment(userCourseRepeatId,userCourseRepeatComment.getId(),1);
         commentPush.setUser(user.getId(),user.getHead(),user.getNickname());
-        commentPush.setMessage((text+(audio== null ? "" : "[音频内容]")));
+        commentPush.setMessage(((StringUtils.isBlank(text) ? "" : text)+(audio == null ? "" : "[音频内容]")));
         this.pushService.sendCommentPush(userCourseRepeat.getUserCourse().getUser().getId(),commentPush);
     }
 

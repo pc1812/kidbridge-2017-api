@@ -76,7 +76,7 @@ public class IOSIAPProductService {
      * @throws KeyStoreException
      */
     @Transactional
-    public void validate(Integer userId,String receiptData) throws IOException, CertificateException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyManagementException, KeyStoreException {
+    public synchronized void validate(Integer userId,String receiptData) throws IOException, CertificateException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyManagementException, KeyStoreException {
         if(StringUtils.isBlank(receiptData)){
             throw new KidbridgeSystemException("未知的支付凭证");
         }
@@ -89,17 +89,12 @@ public class IOSIAPProductService {
         // 凭证状态，0为支付成功
         int status = (int) response.get("status");
         if(status != 0){
-            throw new KidbridgeSystemException("非法的支付凭证状态");
+            throw new KidbridgeSimpleException("非法的支付凭证状态");
         }
         Map receipt = (Map) response.get("receipt");
         List<Map> inAppList = (List<Map>) receipt.get("in_app");
         Map payment = inAppList.get(0);
         String transactionId = (String) payment.get("transaction_id");
-        // 通过苹果交易号查询本平台记录，判断是否存在
-        IOSIAPRecharge iosiapRecharge = this.iosiapRechargeService.get(transactionId);
-        if(iosiapRecharge != null){
-            throw new KidbridgeSimpleException("支付凭证已失效");
-        }
         int quantity = Integer.valueOf((String) payment.get("quantity"));
         // 查询产品信息
         IOSIAPProduct product = this.get(new IOSIAPProduct(){
@@ -109,7 +104,12 @@ public class IOSIAPProductService {
             }
         });
         if(product == null){
-            throw new KidbridgeSystemException("未知的产品编号");
+            throw new KidbridgeSimpleException("未知的产品编号");
+        }
+        // 通过苹果交易号查询本平台记录，判断是否存在
+        IOSIAPRecharge iosiapRecharge = this.iosiapRechargeService.get(transactionId);
+        if(iosiapRecharge != null){
+            throw new KidbridgeSimpleException("支付凭证已失效");
         }
         // 内购充值记录保存
         this.iosiapRechargeService.save(new IOSIAPRecharge(){

@@ -2,7 +2,7 @@ package net.$51zhiyuan.development.kidbridge.ui.model;
 
 import java.util.Date;
 
-public class IOSIAP {
+public class IOSIAPProduct {
 
     private Integer id;
     private String name;
@@ -15,7 +15,7 @@ public class IOSIAP {
         return id;
     }
 
-    public IOSIAP setId(Integer id) {
+    public IOSIAPProduct setId(Integer id) {
         this.id = id;
         return this;
     }
@@ -24,7 +24,7 @@ public class IOSIAP {
         return name;
     }
 
-    public IOSIAP setName(String name) {
+    public IOSIAPProduct setName(String name) {
         this.name = name;
         return this;
     }
@@ -33,7 +33,7 @@ public class IOSIAP {
         return product;
     }
 
-    public IOSIAP setProduct(String product) {
+    public IOSIAPProduct setProduct(String product) {
         this.product = product;
         return this;
     }
@@ -42,7 +42,7 @@ public class IOSIAP {
         return delFlag;
     }
 
-    public IOSIAP setDelFlag(Boolean delFlag) {
+    public IOSIAPProduct setDelFlag(Boolean delFlag) {
         this.delFlag = delFlag;
         return this;
     }
@@ -51,7 +51,7 @@ public class IOSIAP {
         return createTime;
     }
 
-    public IOSIAP setCreateTime(Date createTime) {
+    public IOSIAPProduct setCreateTime(Date createTime) {
         this.createTime = createTime;
         return this;
     }
@@ -60,7 +60,7 @@ public class IOSIAP {
         return updateTime;
     }
 
-    public IOSIAP setUpdateTime(Date updateTime) {
+    public IOSIAPProduct setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
         return this;
     }

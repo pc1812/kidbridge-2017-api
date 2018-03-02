@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.$51zhiyuan.development.kidbridge.dao.IOSIAPProduct">
+
+    <select id="list" parameterType="IOSIAPProduct" resultType="IOSIAPProduct">
+        SELECT
+            `iosiapproduct`.`name`,
+            `iosiapproduct`.`product`
+        FROM
+            `t_ios_iap_product` AS `iosiapproduct`
+        WHERE
+            `iosiapproduct`.`del_flag` = FALSE
+    </select>
+
+</mapper>

@@ -36,7 +36,6 @@ public class IAPController {
     @ResponseBody
     @RequestMapping(value = "/ios/validate")
     Object validate(@RequestBody Map param) throws CertificateException, UnrecoverableKeyException, NoSuchAlgorithmException, IOException, KeyManagementException, KeyStoreException {
-
         this.iosiapProductService.validate((int)SecurityUtils.getSubject().getPrincipal(), (String) param.get("receipt-data"));
         return new Message();
     }

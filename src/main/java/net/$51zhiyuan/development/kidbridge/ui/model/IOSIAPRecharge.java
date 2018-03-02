@@ -3,46 +3,55 @@ package net.$51zhiyuan.development.kidbridge.ui.model;
 import java.math.BigDecimal;
 import java.util.Date;
 
-public class IOSIAPProduct {
+public class IOSIAPRecharge {
 
-    private Integer id;
-    private String name;
-    private BigDecimal price;
-    private String product;
+    private String id;
+    private User user;
+    private BigDecimal fee;
+    private IOSIAPProduct iosiapProduct;
+    private Integer quantity;
     private Boolean delFlag;
     private Date createTime;
     private Date updateTime;
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public User getUser() {
+        return user;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUser(User user) {
+        this.user = user;
     }
 
-    public BigDecimal getPrice() {
-        return price;
+    public BigDecimal getFee() {
+        return fee;
     }
 
-    public void setPrice(BigDecimal price) {
-        this.price = price;
+    public void setFee(BigDecimal fee) {
+        this.fee = fee;
     }
 
-    public String getProduct() {
-        return product;
+    public IOSIAPProduct getIosiapProduct() {
+        return iosiapProduct;
     }
 
-    public void setProduct(String product) {
-        this.product = product;
+    public void setIosiapProduct(IOSIAPProduct iosiapProduct) {
+        this.iosiapProduct = iosiapProduct;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
     }
 
     public Boolean getDelFlag() {
@@ -71,11 +80,10 @@ public class IOSIAPProduct {
 
     @Override
     public String toString() {
-        return "IOSIAPProduct{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", price=" + price +
-                ", product='" + product + '\'' +
+        return "IOSIAPRecharge{" +
+                "id='" + id + '\'' +
+                ", user=" + user +
+                ", fee=" + fee +
                 ", delFlag=" + delFlag +
                 ", createTime=" + createTime +
                 ", updateTime=" + updateTime +

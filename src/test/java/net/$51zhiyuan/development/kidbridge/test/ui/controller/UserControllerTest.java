@@ -31,7 +31,7 @@ public class UserControllerTest {
 
     private final KidbridgeObjectMapper kidbridgeObjectMapper = new KidbridgeObjectMapper();
     private HttpClient http;
-    private final String domain = "http://127.0.0.1:83/user";
+    private final String domain = "http://127.0.0.1:80/user";
     private final Logger logger = LogManager.getLogger(UserControllerTest.class);
 
     private String userToken = "2fc8389e2afe4e98b39ea9b6f7d13ea9";

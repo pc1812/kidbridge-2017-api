@@ -58,6 +58,7 @@
         <mapper resource="mybatis/mapper/RechargeMapper.xml"/>
         <mapper resource="mybatis/mapper/ConfigMapper.xml"/>
         <mapper resource="mybatis/mapper/IOSIAPProductMapper.xml"/>
+        <mapper resource="mybatis/mapper/IOSIAPRechargeMapper.xml"/>
         <mapper resource="mybatis/mapper/VersionMapper.xml"/>
     </mappers>
 

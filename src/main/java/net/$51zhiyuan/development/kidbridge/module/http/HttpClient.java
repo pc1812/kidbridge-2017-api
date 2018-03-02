@@ -83,13 +83,13 @@ public class HttpClient {
         return this.doPost(url, "utf-8", params);
     }
 
-    public String doPost(String url, String responseCharset, List<NameValuePair> params) throws IOException, KeyManagementException, NoSuchAlgorithmException, CertificateException, KeyStoreException, UnrecoverableKeyException {
+    public String doPost(String url, String responseCharset, List<NameValuePair> params) throws IOException, KeyManagementException, NoSuchAlgorithmException {
         String response = null;
         CloseableHttpClient closeableHttpClient = null;
         CloseableHttpResponse closeableHttpResponse = null;
         try {
             UrlEncodedFormEntity urlEncodedFormEntity = new UrlEncodedFormEntity(params, "utf-8");
-            RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(6666).setConnectTimeout(6666).build();
+            RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(30000).setConnectTimeout(30000).build();
             closeableHttpClient = HttpClients.custom().setDefaultCookieStore(this.basicCookieStore).setSSLSocketFactory(this.getSSLConnectionSocketFactory()).build();
             HttpPost httpPost = new HttpPost(url);
             httpPost.setEntity(urlEncodedFormEntity);
@@ -131,13 +131,13 @@ public class HttpClient {
         return this.doPost(url, "utf-8", null,content);
     }
 
-    public String doPost(String url, String responseCharset, Header[] headers, String content) throws IOException, KeyManagementException, NoSuchAlgorithmException, CertificateException, KeyStoreException, UnrecoverableKeyException {
+    public String doPost(String url, String responseCharset, Header[] headers, String content) throws IOException, KeyManagementException, NoSuchAlgorithmException {
         String response = null;
         CloseableHttpClient closeableHttpClient = null;
         CloseableHttpResponse closeableHttpResponse = null;
         try {
             StringEntity stringEntity = new StringEntity(content, "utf-8");
-            RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(6666).setConnectTimeout(6666).build();
+            RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(30000).setConnectTimeout(30000).build();
             closeableHttpClient = HttpClients.custom().setDefaultCookieStore(this.basicCookieStore).setSSLSocketFactory(this.getSSLConnectionSocketFactory()).build();
             HttpPost httpPost = new HttpPost(url);
             if(headers != null){
@@ -162,14 +162,14 @@ public class HttpClient {
     }
 
 
-    public String doPost(String url,Header[] headers, String requestBody) throws IOException, KeyManagementException, NoSuchAlgorithmException, CertificateException, KeyStoreException, UnrecoverableKeyException {
+    public String doPost(String url,Header[] headers, String requestBody) throws IOException, KeyManagementException, NoSuchAlgorithmException {
         String response = null;
         CloseableHttpClient closeableHttpClient = null;
         CloseableHttpResponse closeableHttpResponse = null;
         try {
             StringEntity stringEntity = new StringEntity(requestBody, "utf-8");
             stringEntity.setContentType("application/json;charset=utf-8");
-            RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(6666).setConnectTimeout(6666).build();
+            RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(30000).setConnectTimeout(30000).build();
             closeableHttpClient = HttpClients.custom().setDefaultCookieStore(this.basicCookieStore).setSSLSocketFactory(this.getSSLConnectionSocketFactory()).build();
             HttpPost httpPost = new HttpPost(url);
             httpPost.setHeaders(headers);
@@ -193,7 +193,7 @@ public class HttpClient {
 
 
 
-    public String doPost(String url, File file) throws IOException, KeyManagementException, NoSuchAlgorithmException, CertificateException, KeyStoreException, UnrecoverableKeyException {
+    public String doPost(String url, File file) throws IOException, KeyManagementException, NoSuchAlgorithmException {
         String response = null;
         CloseableHttpClient closeableHttpClient = null;
         CloseableHttpResponse closeableHttpResponse = null;
@@ -202,7 +202,7 @@ public class HttpClient {
             MultipartEntityBuilder multipartEntityBuilder = MultipartEntityBuilder.create();
             multipartEntityBuilder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
             multipartEntityBuilder.addPart("media", fileBody);
-            RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(6666).setConnectTimeout(6666).build();
+            RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(30000).setConnectTimeout(30000).build();
             HttpEntity entity = multipartEntityBuilder.build();
             closeableHttpClient = HttpClients.custom().setDefaultCookieStore(this.basicCookieStore).setSSLSocketFactory(this.getSSLConnectionSocketFactory()).build();
             HttpPost httpPost = new HttpPost(url);
@@ -233,12 +233,12 @@ public class HttpClient {
         return this.doGet(url, "utf-8");
     }
 
-    public String doGet(String url, String responseCharset) throws IOException, KeyManagementException, NoSuchAlgorithmException, CertificateException, KeyStoreException, UnrecoverableKeyException {
+    public String doGet(String url, String responseCharset) throws IOException, KeyManagementException, NoSuchAlgorithmException {
         String response = null;
         CloseableHttpClient closeableHttpClient = null;
         CloseableHttpResponse closeableHttpResponse = null;
         try {
-            RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(6666).setConnectTimeout(6666).build();
+            RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(30000).setConnectTimeout(30000).build();
             closeableHttpClient = HttpClients.custom().setDefaultCookieStore(this.basicCookieStore).setSSLSocketFactory(this.getSSLConnectionSocketFactory()).build();
             HttpGet httpGet = new HttpGet(url);
             httpGet.setConfig(requestConfig);

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.$51zhiyuan.development.kidbridge.dao.IOSIAPRecharge">
+
+    <select id="get" parameterType="java.lang.String" resultType="IOSIAPRecharge">
+        SELECT
+            `IOSIAPRecharge`.`id`,
+            `IOSIAPRecharge`.`user_id`,
+            `IOSIAPRecharge`.`fee`,
+            `IOSIAPRecharge`.`ios_iap_product_id` AS `iosiapProduct.id`,
+            `IOSIAPRecharge`.`quantity`,
+            `IOSIAPRecharge`.`del_flag`,
+            `IOSIAPRecharge`.`create_time`,
+            `IOSIAPRecharge`.`update_time`
+        FROM
+            `t_ios_iap_recharge` AS `IOSIAPRecharge`
+        WHERE
+            `IOSIAPRecharge`.`del_flag` = FALSE
+            AND `IOSIAPRecharge`.`id` = #{_parameter}
+    </select>
+
+    <insert id="save" parameterType="IOSIAPRecharge">
+        INSERT INTO `t_ios_iap_recharge`(
+            `id`,
+            `user_id`,
+            `fee`,
+            `ios_iap_product_id`,
+            `quantity`
+        )VALUES(
+            #{id},
+            #{user.id},
+            #{fee},
+            #{iosiapProduct.id},
+            #{quantity}
+        )
+
+    </insert>
+
+</mapper>

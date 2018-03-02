@@ -15,54 +15,48 @@ public class IOSIAPProduct {
         return id;
     }
 
-    public IOSIAPProduct setId(Integer id) {
+    public void setId(Integer id) {
         this.id = id;
-        return this;
     }
 
     public String getName() {
         return name;
     }
 
-    public IOSIAPProduct setName(String name) {
+    public void setName(String name) {
         this.name = name;
-        return this;
     }
 
     public String getProduct() {
         return product;
     }
 
-    public IOSIAPProduct setProduct(String product) {
+    public void setProduct(String product) {
         this.product = product;
-        return this;
     }
 
     public Boolean getDelFlag() {
         return delFlag;
     }
 
-    public IOSIAPProduct setDelFlag(Boolean delFlag) {
+    public void setDelFlag(Boolean delFlag) {
         this.delFlag = delFlag;
-        return this;
     }
 
     public Date getCreateTime() {
         return createTime;
     }
 
-    public IOSIAPProduct setCreateTime(Date createTime) {
+    public void setCreateTime(Date createTime) {
         this.createTime = createTime;
-        return this;
     }
 
     public Date getUpdateTime() {
         return updateTime;
     }
 
-    public IOSIAPProduct setUpdateTime(Date updateTime) {
+    public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
-        return this;
     }
 
     @Override

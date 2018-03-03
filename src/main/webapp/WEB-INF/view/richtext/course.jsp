@@ -29,7 +29,7 @@
             max-width: 100%;
         }
         .outline * {
-            width: 100% !important;
+            max-width: 100% !important;
         }
     </style>
 </head>

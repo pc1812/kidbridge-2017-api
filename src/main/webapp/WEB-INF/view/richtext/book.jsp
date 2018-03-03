@@ -29,7 +29,7 @@
             max-width: 100%;
         }
         .outline * {
-            width: 100% !important;
+            max-width: 100% !important;
         }
     </style>
 </head>
@@ -48,6 +48,7 @@
     $(".outline *").css("height","");
     $(".outline *").css("margin","");
     $(".outline *").css("padding","");
+
 </script>
 </body>
 </html>

@@ -142,7 +142,7 @@ public class BookController {
         // 获取七牛云存储的富文本
         String html = (id.equals("-1") ? "暂无内容"  : this.bookService.getRichtext(book.getRichText()));
         view.addObject("book",book); // 绘本信息
-        view.addObject("html",html); // 富文本信息
+        view.addObject("html",html.replace("data-w","width")); // 富文本信息
         return view;
     }
 

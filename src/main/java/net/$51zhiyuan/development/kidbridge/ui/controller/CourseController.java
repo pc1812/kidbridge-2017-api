@@ -203,7 +203,7 @@ public class CourseController {
         });
         // 获取七牛云存储的富文本内容
         String html = this.courseService.getRichtext(course.getRichText());
-        view.addObject("html",html); // 富文本内容
+        view.addObject("html",html.replace("data-w","width")); // 富文本内容
         view.addObject("course",course); // 课程信息
         return view;
     }

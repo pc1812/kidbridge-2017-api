@@ -13,6 +13,7 @@ public class UserBook implements Serializable {
     private User user;
     private Book book;
     private Boolean free;
+    private Object option;
     private List<UserBookRepeat> userBookRepeatList;
     private Boolean delFlag;
     private Date createTime;
@@ -48,6 +49,14 @@ public class UserBook implements Serializable {
 
     public void setFree(Boolean free) {
         this.free = free;
+    }
+
+    public Object getOption() {
+        return option;
+    }
+
+    public void setOption(Object option) {
+        this.option = option;
     }
 
     public List<UserBookRepeat> getUserBookRepeatList() {
@@ -89,6 +98,7 @@ public class UserBook implements Serializable {
                 ", user=" + user +
                 ", book=" + book +
                 ", free=" + free +
+                ", option=" + option +
                 ", userBookRepeatList=" + userBookRepeatList +
                 ", delFlag=" + delFlag +
                 ", createTime=" + createTime +

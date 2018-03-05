@@ -19,13 +19,13 @@
                 AND `userCourse`.`id` = #{id}
             </if>
             <if test="user != null and user.id != null">
-                AND userCourse.user_id = #{user.id}
+                AND `userCourse`.`user_id` = #{user.id}
             </if>
             <if test="course != null and course.id != null">
-                AND userCourse.course_id = #{course.id}
+                AND `userCourse`.`course_id` = #{course.id}
             </if>
         ORDER BY
-            `userCourse`.`create_time` DESC
+            `userCourse`.`create_time` ASC
     </select>
 
     <!--用户已解锁的课程列表-->

@@ -4,16 +4,42 @@
 
 
     <!--新增绘本解锁信息-->
-    <insert id="add">
+    <!--<insert id="add">
         INSERT INTO `t_user_book`(
             `user_id`,
             `book_id`,
             `free`
+            <if test="option != null">
+                ,`option`
+            </if>
         )VALUES(
             #{user.id},
             #{book.id},
             #{free}
+            <if test="option != null">
+                ,#{option,typeHandler=net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler}
+            </if>
         )
+    </insert>-->
+
+    <insert id="add">
+        INSERT INTO `t_user_book` (
+            `user_id`,
+            `book_id`,
+            `free`
+            <if test="option != null">
+                ,`option`
+            </if>
+        )
+        SELECT
+            #{user.id},
+            #{book.id},
+            #{free}
+            <if test="option != null">
+                ,#{option,typeHandler=net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler}
+            </if>
+        FROM DUAL WHERE NOT EXISTS
+            (SELECT 1 FROM t_user_book AS userBook WHERE userBook.del_flag = FALSE AND userBook.user_id= #{user.id} AND userBook.book_id = #{book.id})
     </insert>
 
     <!--获取解锁信息-->

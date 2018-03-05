@@ -56,7 +56,7 @@ public class UserBookService {
      * @param free
      * @return
      */
-    public Integer add(Integer userId, Integer bookId, Boolean free){
+    public Integer add(Integer userId, Integer bookId, Boolean free,Object option){
         return this.sqlSessionTemplate.insert(this.namespace + "add",new UserBook(){
             @Override
             public User getUser() {
@@ -82,7 +82,16 @@ public class UserBookService {
             public Boolean getFree() {
                 return free;
             }
+
+            @Override
+            public Object getOption() {
+                return option;
+            }
         });
+    }
+
+    public Integer add(Integer userId, Integer bookId, Boolean free){
+        return this.add(userId, bookId, free,null);
     }
 
     /**

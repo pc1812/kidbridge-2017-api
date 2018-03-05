@@ -24,9 +24,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.text.ParseException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * 课程
@@ -55,6 +54,17 @@ public class CourseService {
 
     @Autowired
     private PushService pushService;
+
+    @Autowired
+    private UserBookService userBookService;
+
+    /**
+     * 获取提前预习的课程
+     * @return
+     */
+    public List<Map> getPreviewList(){
+        return this.sqlSessionTemplate.selectList(this.namespace + "getPreviewList");
+    }
 
     /**
      * 获取单个课程详情
@@ -144,6 +154,29 @@ public class CourseService {
         SystemPush systemPush = new SystemPush();
         systemPush.setMessage(String.format("您已解锁新课程：《%s》，快快去跟读吧 ~",course.getName()));
         this.pushService.sendSystemPush(userId,systemPush);
+
+        // 如果用户报名的时间为课程开课的前一天，则将课程第一本绘本给与用户预习
+        Course previewCourse = this.getCourseBookList(courseId);
+        CourseDetail first = previewCourse.getCourseDetailList().get(0);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(first.getStartTime());
+        // 减去一天
+        calendar.add(Calendar.DAY_OF_MONTH, -1);
+        // 减去一天等于用户解锁当天，给与绘本
+        if((new SimpleDateFormat("yyyyMMdd").format(calendar.getTime())).equals(new SimpleDateFormat("yyyyMMdd").format(new Date()))){
+            // 给与绘本
+            int resultRow = this.userBookService.add(userId,first.getBook().getId(),true,new HashMap(){{
+                this.put("type",0);
+                this.put("course",courseId);
+                this.put("timestamp",new Date());
+            }});
+            // 发送推送消息
+            if(resultRow > 0){
+                SystemPush previewPush = new SystemPush();
+                previewPush.setMessage(String.format("您的课程《%s》中的绘本《%s》已开放预习，快快去跟读吧 ~",previewCourse.getName(),first.getBook().getName()));
+                this.pushService.sendSystemPush(userId,previewPush);
+            }
+        }
     }
 
     /**

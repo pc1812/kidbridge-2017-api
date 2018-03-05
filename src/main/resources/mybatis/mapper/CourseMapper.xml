@@ -122,6 +122,7 @@
             <result property="startTime" column="book_start_time" />
             <association property="book" javaType="Book">
                 <id property="id" column="book_id" />
+                <id property="name" column="book_name" />
                 <result property="icon" column="book_icon" typeHandler="net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler" />
             </association>
         </collection>
@@ -134,6 +135,7 @@
             `course`.`name` AS `course_name`,
             `book`.`id` AS `book_id`,
             `book`.`icon` AS `book_icon`,
+            `book`.`name` AS `book_name`,
             `courseDetail`.`id` AS `courseDetail_id`,
             `courseDetail`.`cycle` AS `courseDetail_cycle`,
             DATE_ADD(course.start_time,INTERVAL @temp DAY) AS `book_start_time`,
@@ -147,8 +149,38 @@
             AND `courseDetail`.`del_flag` = FALSE
             AND `courseDetail`.`book_id` = `book`.`id`
             AND `courseDetail`.`course_id` = #{_parameter}
-        ORDER BY
-            `courseDetail`.`create_time` ASC
+        /*ORDER BY
+            `courseDetail`.`create_time` ASC*/
+    </select>
+
+    <!--获取提前预习的课程-->
+    <select id="getPreviewList" resultType="java.util.HashMap">
+        SELECT
+            `temp`.`course_id` AS `courseId`,
+            `temp`.`course_name` AS `courseName`,
+            `temp`.`book_id` AS `bookId`,
+            `temp`.`book_name` AS `bookName`,
+            `temp`.`book_start_time` AS `bookStartTime`
+        FROM
+            (
+                SELECT
+                    `course`.`id` AS `course_id`,
+                    `course`.`name` AS `course_name`,
+                    `book`.`id` AS `book_id`,
+                    `book`.`name` AS `book_name`,
+                    DATE_ADD(`course`.`start_time`,INTERVAL @temp DAY) AS `book_start_time`,
+                    @temp:= IF((SELECT `temp`.`course_id` FROM `t_course_detail` AS `temp` WHERE `temp`.`id` > `courseDetail`.`id` LIMIT 1) = `courseDetail`.`course_id`,@temp+`courseDetail`.`cycle`,0) AS `temp`
+                FROM
+                    `t_course` AS `course`, `t_course_detail` AS `courseDetail`, `t_book` AS `book`, (SELECT @temp:=0) AS `temp`
+                WHERE
+                    `course`.`del_flag` = FALSE
+                    AND `book`.`del_flag` = FALSE
+                    AND `course`.`id` = `courseDetail`.`course_id`
+                    AND `courseDetail`.`del_flag` = FALSE
+                    AND `courseDetail`.`book_id` = `book`.`id`
+            ) AS `temp`
+        WHERE
+            DATE_fORMAT(DATE_SUB(temp.book_start_time,INTERVAL 1 DAY),'%Y-%m-%d') = DATE_fORMAT(NOW(),'%Y-%m-%d')
     </select>
 
     <!--获取课程下的绘本打卡时间-->

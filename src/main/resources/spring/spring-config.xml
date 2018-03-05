@@ -6,12 +6,14 @@
        xmlns:mvc="http://www.springframework.org/schema/mvc"
        xmlns:cache="http://www.springframework.org/schema/cache"
        xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:task="http://www.springframework.org/schema/task"
        xsi:schemaLocation="http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
 						   http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 						   http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
 						   http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
                            http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd
-                           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+                           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+                           http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
 
 
     <!--注解驱动-->
@@ -26,8 +28,9 @@
     <!--事务驱动-->
     <tx:annotation-driven transaction-manager="transactionManager"/>
     <!--包托管路径-->
-    <context:component-scan base-package="net.$51zhiyuan.development.kidbridge.listener,net.$51zhiyuan.development.kidbridge.service,net.$51zhiyuan.development.kidbridge.ui.controller,net.$51zhiyuan.development.kidbridge.module,net.$51zhiyuan.development.kidbridge.module.*"/>
+    <context:component-scan base-package="net.$51zhiyuan.development.kidbridge.task,net.$51zhiyuan.development.kidbridge.listener,net.$51zhiyuan.development.kidbridge.service,net.$51zhiyuan.development.kidbridge.ui.controller,net.$51zhiyuan.development.kidbridge.module,net.$51zhiyuan.development.kidbridge.module.*"/>
 
+    <task:annotation-driven />
     <!--拦截器-->
     <mvc:interceptors>
         <!--不缓存数据-->

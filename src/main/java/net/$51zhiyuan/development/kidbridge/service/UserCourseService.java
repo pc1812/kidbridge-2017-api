@@ -34,6 +34,25 @@ public class UserCourseService {
         return this.sqlSessionTemplate.selectOne(this.namespace + "get",param);
     }
 
+    /**
+     * 获取某一课程被哪些用户解锁过
+     * @param courseId
+     * @return
+     */
+    public List<UserCourse> get(Integer courseId){
+        return this.sqlSessionTemplate.selectList(this.namespace + "get",new UserCourse(){
+            @Override
+            public Course getCourse() {
+                return new Course(){
+                    @Override
+                    public Integer getId() {
+                        return courseId;
+                    }
+                };
+            }
+        });
+    }
+
     @Deprecated
     public List<UserCourse> list(){
         return this.sqlSessionTemplate.selectList(this.namespace + "list",new UserCourse());

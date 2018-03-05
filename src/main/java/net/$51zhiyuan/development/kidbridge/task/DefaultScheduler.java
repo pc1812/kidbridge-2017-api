@@ -48,7 +48,7 @@ public class DefaultScheduler {
      * @throws APIRequestException
      * @throws JsonProcessingException
      */
-    @Scheduled(cron="*/5 * * * * ? ")
+    @Scheduled(cron="1 0 0 * * ? ")
     @Transactional(rollbackFor = Exception.class)
     public void task() throws APIConnectionException, APIRequestException, JsonProcessingException {
         // 获取当天给与的课程和绘本信息

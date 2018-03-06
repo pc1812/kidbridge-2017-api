@@ -8,6 +8,7 @@
             `iosiapProduct`.`name`,
             `iosiapProduct`.`price`,
             `iosiapProduct`.`product`,
+            `iosiapProduct`.`describe`,
             `iosiapProduct`.`del_flag`,
             `iosiapProduct`.`create_time`,
             `iosiapProduct`.`update_time`
@@ -23,7 +24,8 @@
     <select id="list" parameterType="IOSIAPProduct" resultType="IOSIAPProduct">
         SELECT
             `iosiapproduct`.`name`,
-            `iosiapproduct`.`product`
+            `iosiapproduct`.`product`,
+            `iosiapproduct`.`describe`
         FROM
             `t_ios_iap_product` AS `iosiapproduct`
         WHERE

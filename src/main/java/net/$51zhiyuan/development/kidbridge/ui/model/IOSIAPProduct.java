@@ -9,6 +9,7 @@ public class IOSIAPProduct {
     private String name;
     private BigDecimal price;
     private String product;
+    private String describe;
     private Boolean delFlag;
     private Date createTime;
     private Date updateTime;
@@ -45,6 +46,15 @@ public class IOSIAPProduct {
         this.product = product;
     }
 
+    public String getDescribe() {
+        return describe;
+    }
+
+    public IOSIAPProduct setDescribe(String describe) {
+        this.describe = describe;
+        return this;
+    }
+
     public Boolean getDelFlag() {
         return delFlag;
     }
@@ -76,6 +86,7 @@ public class IOSIAPProduct {
                 ", name='" + name + '\'' +
                 ", price=" + price +
                 ", product='" + product + '\'' +
+                ", describe='" + describe + '\'' +
                 ", delFlag=" + delFlag +
                 ", createTime=" + createTime +
                 ", updateTime=" + updateTime +

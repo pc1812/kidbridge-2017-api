@@ -146,6 +146,7 @@
     <resultMap id="getAppreciationResultMap" type="Book">
         <id property="id" column="book_id" />
         <result property="name" column="book_name" />
+        <result property="audio" column="book_audio" />
         <result property="outline" column="book_outline" />
         <association property="copyright" javaType="BookCopyright">
             <association property="user" javaType="User">
@@ -164,6 +165,7 @@
         SELECT
             `book`.`id` AS book_id,
             `book`.`name` AS book_name,
+            `book`.`audio` AS book_audio,
             `book`.`outline` AS book_outline,
             IFNULL(bookCopyright.user_id,-1) AS `bookCopyright_user_id`,
             `bookSegment`.`id` AS bookSegment_id,

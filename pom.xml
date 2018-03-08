@@ -37,6 +37,12 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.jaudiotagger</groupId>
+            <artifactId>audio</artifactId>
+            <version>2.2.6</version>
+            <classifier>SNAPSHOT</classifier>
+        </dependency>
+        <dependency>
             <groupId>android4me</groupId>
             <artifactId>AXMLPrinter</artifactId>
             <version>20081010</version>

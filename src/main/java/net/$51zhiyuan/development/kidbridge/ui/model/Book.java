@@ -24,6 +24,7 @@ public class Book implements Serializable {
     private Boolean active;
     private List<BookSegment> bookSegmentList;
     private String richText;
+    private String audio;
     private User user;
     private Integer lock;
     private Boolean delFlag;
@@ -182,12 +183,22 @@ public class Book implements Serializable {
         this.richText = richText;
     }
 
+    public String getAudio() {
+        return audio;
+    }
+
+    public Book setAudio(String audio) {
+        this.audio = audio;
+        return this;
+    }
+
     @Override
     public String toString() {
         return "Book{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", icon='" + icon + '\'' +
+                ", icon=" + icon +
+                ", copyright=" + copyright +
                 ", price=" + price +
                 ", fit=" + fit +
                 ", outline='" + outline + '\'' +
@@ -196,6 +207,11 @@ public class Book implements Serializable {
                 ", tag=" + tag +
                 ", repeatActiveTime=" + repeatActiveTime +
                 ", active=" + active +
+                ", bookSegmentList=" + bookSegmentList +
+                ", richText='" + richText + '\'' +
+                ", audio='" + audio + '\'' +
+                ", user=" + user +
+                ", lock=" + lock +
                 ", delFlag=" + delFlag +
                 ", createTime=" + createTime +
                 ", updateTime=" + updateTime +

@@ -951,7 +951,7 @@
 
     <select id="getAchievementBonus" parameterType="java.lang.Integer" resultType="java.lang.Integer">
         SELECT
-            SUM(bill.fee)
+            IFNULL(SUM(bill.fee),0)
         FROM
             t_bill AS bill
         WHERE

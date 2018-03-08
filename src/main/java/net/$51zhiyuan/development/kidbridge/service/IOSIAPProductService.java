@@ -83,7 +83,7 @@ public class IOSIAPProductService {
         // 请求苹果服务器，验证凭证
         // 沙盒环境：https://sandbox.itunes.apple.com/verifyReceipt
         // 正式环境：https://buy.itunes.apple.com/verifyReceipt
-        Map response = this.objectMapper.readValue(httpClient.doPost("https://sandbox.itunes.apple.com/verifyReceipt",this.objectMapper.writeValueAsString(new HashMap(){{
+        Map response = this.objectMapper.readValue(httpClient.doPost("https://buy.itunes.apple.com/verifyReceipt",this.objectMapper.writeValueAsString(new HashMap(){{
             this.put("receipt-data",receiptData);
         }})),HashMap.class);
         // 凭证状态，0为支付成功

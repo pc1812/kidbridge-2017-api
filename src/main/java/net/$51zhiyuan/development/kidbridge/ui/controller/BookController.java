@@ -7,8 +7,10 @@ import net.$51zhiyuan.development.kidbridge.module.Configuration;
 import net.$51zhiyuan.development.kidbridge.module.KidbridgePageRowBounds;
 import net.$51zhiyuan.development.kidbridge.service.BookSegmentService;
 import net.$51zhiyuan.development.kidbridge.service.BookService;
+import net.$51zhiyuan.development.kidbridge.service.SearchRecordService;
 import net.$51zhiyuan.development.kidbridge.service.UserBookService;
 import net.$51zhiyuan.development.kidbridge.ui.model.*;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -44,6 +46,9 @@ public class BookController {
 
     @Autowired
     private BookSegmentService bookSegmentService;
+
+    @Autowired
+    private SearchRecordService searchRecordService;
 
     /**
      * 绘本列表
@@ -154,6 +159,26 @@ public class BookController {
     @ResponseBody
     @RequestMapping("/search")
     Message search(@RequestBody Map<String,Object> param){
+        System.out.println("111");
+        if(param.get("keyword") != null && !StringUtils.isBlank(param.get("keyword").toString())){
+            // 记录搜索关键词
+            this.searchRecordService.add(new SearchRecord(){
+                @Override
+                public User getUser() {
+                    return new User(){
+                        @Override
+                        public Integer getId() {
+                            return (int) SecurityUtils.getSubject().getPrincipal();
+                        }
+                    };
+                }
+
+                @Override
+                public String getKeyword() {
+                    return (String) param.get("keyword");
+                }
+            });
+        }
         // 绘本列表
         List<Book> bookList = this.bookService.search((String) param.get("keyword"),new KidbridgePageRowBounds((Integer)param.get(Configuration.SYSTEM_PAGINATION_OFFSET),(Integer)param.get(Configuration.SYSTEM_PAGINATION_LIMIT)));
         return new Message(bookList);

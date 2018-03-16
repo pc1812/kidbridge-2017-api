@@ -17,6 +17,7 @@ public class UserBookRepeat implements Serializable {
     private List segment;
     private List<UserBookRepeatComment> userBookRepeatCommentList;
     private List<UserBookRepeatLike> userBookRepeatLikeList;
+    private Boolean share;
     private Boolean delFlag;
     private Date createTime;
     private Date updateTime;
@@ -60,6 +61,14 @@ public class UserBookRepeat implements Serializable {
 
     public void setUserBookRepeatLikeList(List<UserBookRepeatLike> userBookRepeatLikeList) {
         this.userBookRepeatLikeList = userBookRepeatLikeList;
+    }
+
+    public Boolean getShare() {
+        return share;
+    }
+
+    public void setShare(Boolean share) {
+        this.share = share;
     }
 
     public Boolean getDelFlag() {
@@ -106,13 +115,16 @@ public class UserBookRepeat implements Serializable {
     public String toString() {
         return "UserBookRepeat{" +
                 "id=" + id +
+                ", like=" + like +
                 ", userBook=" + userBook +
                 ", segment=" + segment +
                 ", userBookRepeatCommentList=" + userBookRepeatCommentList +
                 ", userBookRepeatLikeList=" + userBookRepeatLikeList +
+                ", share=" + share +
                 ", delFlag=" + delFlag +
                 ", createTime=" + createTime +
                 ", updateTime=" + updateTime +
+                ", book=" + book +
                 '}';
     }
 }

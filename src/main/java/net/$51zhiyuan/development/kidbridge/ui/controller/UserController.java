@@ -245,9 +245,72 @@ public class UserController {
      * @param param
      * @return
      */
+    @Deprecated
     @ResponseBody
     @RequestMapping("/medal")
     Message medal(@RequestBody Map<String,Object> param){
+        int bonus = this.userService.getAchievementBonus((int)SecurityUtils.getSubject().getPrincipal());
+        List<Medal> medalList = new ArrayList(){{
+            this.add(new HashMap(){{
+                this.put("id",4);
+                this.put("name","嫩芽勋章");
+                this.put("icon",new HashMap(){{
+                    this.put("active","FnCj0Tqwb1GsU4dn_K41veE1aMHW");
+                    this.put("quiet","FuYiE9iAWcJvKEYNNqp2oNMZftBB");
+                }});
+                this.put("bonus",180);
+            }});
+            this.add(new HashMap(){{
+                this.put("id",5);
+                this.put("name","竹子勋章");
+                this.put("icon",new HashMap(){{
+                    this.put("active","Fg2eutRAhd4DAN_JFhnhJWfxTNBC");
+                    this.put("quiet","FrYCvxU2yW4dpm0Vbbz-nvLhclZU");
+                }});
+                this.put("bonus",210);
+            }});
+            this.add(new HashMap(){{
+                this.put("id",6);
+                this.put("name","垂柳勋章");
+                this.put("icon",new HashMap(){{
+                    this.put("active","FlxMuF-M2UgMoA5b8Z_AQu7o0-12");
+                    this.put("quiet","FjGKV9JF50gGHwSsxeSy0WPNqjE1");
+                }});
+                this.put("bonus",240);
+            }});
+            this.add(new HashMap(){{
+                this.put("id",7);
+                this.put("name","松柏勋章");
+                this.put("icon",new HashMap(){{
+                    this.put("active","Fn_HhO8qSTZSZo6IqV5Rysk5cWRI");
+                    this.put("quiet","FgBEmut2IJiAMYwmcz1qYhoyj-Ob");
+                }});
+                this.put("bonus",270);
+            }});
+            this.add(new HashMap(){{
+                this.put("id",8);
+                this.put("name","香樟勋章");
+                this.put("icon",new HashMap(){{
+                    this.put("active","Fo6tytpvW5qsczlZ8r6Jsqw5wqpp");
+                    this.put("quiet","FvKW-qJySFEaScwLmYrY72FzQmgR");
+                }});
+                this.put("bonus",300);
+            }});
+        }};
+        return new Message(new HashMap(){{
+            this.put("bonus",bonus); // 用户当前积分
+            this.put("medalList",medalList); // 勋章信息
+        }});
+    }
+
+    /**
+     * 用户勋章
+     * @param param
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("/medal/v2")
+    Message medal_v2(@RequestBody Map<String,Object> param){
         int bonus = this.userService.getAchievementBonus((int)SecurityUtils.getSubject().getPrincipal());
         List<Medal> medalList = this.medalService.list();
         return new Message(new HashMap(){{
@@ -752,6 +815,30 @@ public class UserController {
     @RequestMapping("/course/repeat/reward")
     Message user_course_repeat_reward(@RequestBody Map<String,Object> param){
         this.userService.userCourseRepeatReward((int)SecurityUtils.getSubject().getPrincipal(), BigDecimal.valueOf(Double.parseDouble(param.get("fee").toString())),(int)param.get("id"));
+        return new Message();
+    }
+
+    /**
+     * 用户绘本跟读分享
+     * @param param id：绘本跟读ID
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("/book/repeat/share")
+    Message user_book_repeat_share(@RequestBody Map<String,Object> param){
+        this.userService.userBookRepeatShare((int)SecurityUtils.getSubject().getPrincipal(),(int)param.get("id"));
+        return new Message();
+    }
+
+    /**
+     * 用户课程跟读分享
+     * @param param id：课程跟读ID
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("/course/repeat/share")
+    Message user_course_repeat_share(@RequestBody Map<String,Object> param){
+        this.userService.userCourseRepeatShare((int)SecurityUtils.getSubject().getPrincipal(), (int)param.get("id"));
         return new Message();
     }
 

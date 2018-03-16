@@ -34,7 +34,7 @@
         WHERE
             `medal`.`del_flag` = FALSE
         ORDER BY
-            `medal`.`create_time` DESC
+            `medal`.`bonus` ASC
     </select>
 
     <!--当前积分到下一勋章的信息-->

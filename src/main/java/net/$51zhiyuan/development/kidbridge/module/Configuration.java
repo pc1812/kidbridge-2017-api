@@ -112,6 +112,11 @@ public class Configuration {
     // 系统课程跟读增加水滴数
     public static final String BONUS_INCREASE_COURSE_REPEAT = "kidbridge.bonus.increase.courseRepeat";
 
+    // 系统用户跟读分享增加水滴数
+    public static final String BONUS_INCREASE_BOOK_REPEAT_SHARE = "kidbridge.bonus.increase.bookRepeatShare";
+    // 系统课程跟读分享增加水滴数
+    public static final String BONUS_INCREASE_COURSE_REPEAT_SHARE = "kidbridge.bonus.increase.courseRepeatShare";
+
     private static PropertiesFactoryBean PROPERTIES_FACTORY;
 
     /**

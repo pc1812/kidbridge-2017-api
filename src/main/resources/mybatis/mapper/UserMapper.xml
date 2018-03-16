@@ -208,8 +208,14 @@
     <!--修改用户课程跟读信息-->
     <update id="updateCourseRepeat">
         UPDATE `t_user_course_repeat`
-        SET
-            `segment` = #{segment,typeHandler=net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler}
+            <set>
+                <if test="segment != null">
+                    `segment` = #{segment,typeHandler=net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler},
+                </if>
+                <if test="share != null">
+                    `share` = #{share},
+                </if>
+            </set>
         WHERE
             `id` = #{id}
     </update>
@@ -250,6 +256,9 @@
                 </if>
                 <if test="segment != null">
                     `segment` = #{segment,typeHandler=net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler},
+                </if>
+                <if test="share != null">
+                    `share` = #{share},
                 </if>
                 <if test="delFlag != null">
                     `del_flag` = #{delFlag}
@@ -299,6 +308,7 @@
         <id property="id" column="userBookRepeat_id" />
         <result property="like" column="userBookRepeat_like" />
         <result property="segment" column="userBookRepeat_segment" typeHandler="net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler" />
+        <result property="share" column="userBookRepeat_share" />
         <result property="createTime" column="userBookRepeat_update_time" />
         <result property="updateTime" column="userBookRepeat_update_time" />
         <association property="userBook" javaType="UserBook">
@@ -326,6 +336,7 @@
             `user`.`signature` AS `user_signature`,
             `userBookRepeat`.`id` AS `userBookRepeat_id`,
             `userBookRepeat`.`segment` AS `userBookRepeat_segment`,
+            `userBookRepeat`.`share` AS `userBookRepeat_share`,
             `userBookRepeat`.`update_time` AS`userBookRepeat_update_time`,
             (SELECT COUNT(*) FROM `t_user_book_repeat_like` AS `userBookRepeatLike` WHERE `userBookRepeatLike`.`del_flag` = FALSE AND `userBookRepeatLike`.`user_book_repeat_id` = #{_parameter}) AS `userBookRepeat_like`,
             `book`.`id` AS `book_id`,
@@ -853,7 +864,7 @@
         FROM
             `t_user_course_repeat` AS `userCourseRepeat`
         LEFT JOIN (SELECT * FROM `t_user_course` AS userCourse WHERE userCourse.del_flag = FALSE ) AS `userCourse` ON `userCourse`.`id` = `userCourseRepeat`.`user_course_id`
-        LEFT JOIN (SELECT * FROM `t_course` AS course WHERE course.del_flag = FALSE ) AS `course` ON `course`.`id` = `userCourse`.`course_id`
+        RIGHT JOIN (SELECT * FROM `t_course` AS course WHERE course.del_flag = FALSE ) AS `course` ON `course`.`id` = `userCourse`.`course_id`
         WHERE
             `userCourseRepeat`.`user_course_id` IN (SELECT `userCourse`.`id` FROM `t_user_course` AS `userCourse` WHERE `userCourse`.`user_id` = #{_parameter} AND `userCourse`.`del_flag` = FALSE)
             AND `userCourseRepeat`.`del_flag` = FALSE
@@ -897,6 +908,7 @@
     <resultMap id="getUserCourseRepeatResultMap" type="UserCourseRepeat">
         <id property="id" column="userCourseRepeat_id" />
         <result property="segment" column="userCourseRepeat_segment" typeHandler="net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler" />
+        <result property="share" column="userCourseRepeat_share" />
         <result property="like" column="userCourseRepeat_like" />
         <result property="createTime" column="userCourseRepeat_update_time" />
         <association property="userCourse" javaType="UserCourse">
@@ -918,7 +930,7 @@
         </association>
     </resultMap>
 
-    <!--用户课程跟读-->
+    <!--用户课程跟读详情-->
     <select id="getUserCourseRepeat" parameterType="java.lang.Integer" resultMap="getUserCourseRepeatResultMap">
         SELECT
             `course`.`id` AS `course_id`,
@@ -932,6 +944,7 @@
             `userCourseRepeat`.`id` AS `userCourseRepeat_id`,
             `userCourseRepeat`.`book_id` AS `userCourseRepeat_book_id`,
             `userCourseRepeat`.`segment` AS `userCourseRepeat_segment`,
+            `userCourseRepeat`.`share` AS `userCourseRepeat_share`,
             DATE_FORMAT(`userCourseRepeat`.`update_time`,"%Y-%m-%d") AS `userCourseRepeat_update_time`,
             (SELECT COUNT(*) FROM `t_user_course_repeat_like` AS `userCourseRepeatLike` WHERE `userCourseRepeatLike`.`del_flag` = FALSE AND `userCourseRepeatLike`.`user_course_repeat_id` = `userCourseRepeat`.`id`) AS `userCourseRepeat_like`
         FROM

@@ -34,7 +34,7 @@ public class UserControllerTest {
     private final String domain = "http://127.0.0.1:83/user";
     private final Logger logger = LogManager.getLogger(UserControllerTest.class);
 
-    private String userToken = "7561e304ba7b472fbdbb2eef9812798f";
+    private String userToken = "0d3de2d605274b8ba4d9828d3cb96dde";
 
     @Before
     public void setUp() {
@@ -163,6 +163,15 @@ public class UserControllerTest {
     @Test
     public void medal() throws IOException, CertificateException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyManagementException, KeyStoreException {
         String api = "/medal";
+        Map param = new HashMap();
+        String response = this.http.doPost(this.domain+api,this.userToken,param);
+        this.logger.debug("request: {}",this.kidbridgeObjectMapper.writeValueAsString(param));
+        this.logger.debug("response: {}",response);
+    }
+
+    @Test
+    public void medal_v2() throws IOException, CertificateException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyManagementException, KeyStoreException {
+        String api = "/medal/v2";
         Map param = new HashMap();
         String response = this.http.doPost(this.domain+api,this.userToken,param);
         this.logger.debug("request: {}",this.kidbridgeObjectMapper.writeValueAsString(param));
@@ -540,8 +549,22 @@ public class UserControllerTest {
     }
 
     @Test
-    public void t() throws CertificateException, UnrecoverableKeyException, NoSuchAlgorithmException, IOException, KeyManagementException, KeyStoreException {
-        String respone = this.http.doGet("http://10.10.10.182:8080/ZhiChuang/ajaxfindfile.do?inid=38&content=金");
+    public void book_repeat_share() throws IOException, CertificateException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyManagementException, KeyStoreException {
+        String api = "/book/repeat/share";
+        Map param = new HashMap();
+        param.put("id",72);
+        String response = this.http.doPost(this.domain+api,this.userToken,param);
+        this.logger.debug("request: " + this.kidbridgeObjectMapper.writeValueAsString(param));
+        this.logger.debug("response: " + response);
     }
 
+    @Test
+    public void course_repeat_share() throws IOException, CertificateException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyManagementException, KeyStoreException {
+        String api = "/course/repeat/share";
+        Map param = new HashMap();
+        param.put("id",76);
+        String response = this.http.doPost(this.domain+api,this.userToken,param);
+        this.logger.debug("request: " + this.kidbridgeObjectMapper.writeValueAsString(param));
+        this.logger.debug("response: " + response);
+    }
 }

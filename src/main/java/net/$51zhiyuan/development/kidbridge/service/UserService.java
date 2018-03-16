@@ -952,7 +952,7 @@ public class UserService {
         CommentPush commentPush = new CommentPush();
         commentPush.setComment(userBookRepeatId, userBookRepeatComment.getId(), 0);
         commentPush.setUser(user.getId(),user.getHead(),user.getNickname());
-        commentPush.setMessage(((StringUtils.isBlank(text) ? "" : text)+(audio == null ? "" : "[音频内容]")));
+        commentPush.setMessage(((StringUtils.isBlank(text) ? "" : text)+(audio == null ? "" : "[语音消息]")));
         this.pushService.sendCommentPush(userBookRepeat.getUserBook().getUser().getId(), commentPush);
     }
 
@@ -1088,7 +1088,7 @@ public class UserService {
         CommentPush commentPush = new CommentPush();
         commentPush.setComment(userCourseRepeatId,userCourseRepeatComment.getId(),1);
         commentPush.setUser(user.getId(),user.getHead(),user.getNickname());
-        commentPush.setMessage(((StringUtils.isBlank(text) ? "" : text)+(audio == null ? "" : "[音频内容]")));
+        commentPush.setMessage(((StringUtils.isBlank(text) ? "" : text)+(audio == null ? "" : "[语音消息]")));
         this.pushService.sendCommentPush(userCourseRepeat.getUserCourse().getUser().getId(),commentPush);
     }
 
@@ -1666,6 +1666,79 @@ public class UserService {
             this.put("type",3);
             this.put("target",userCourseRepeatId);
         }});
+    }
+
+    /**
+     * 用户绘本跟读分享
+     * @param userId
+     * @param bookRepeatId
+     */
+    public void userBookRepeatShare(Integer userId, Integer bookRepeatId){
+        UserBookRepeat userBookRepeat = this.getUserBookRepeat(bookRepeatId);
+        if(userBookRepeat == null){
+            throw new KidbridgeSimpleException("未知的绘本跟读信息");
+        }
+        // 如果该跟读是用户本人跟读的，则进入加水滴流程
+        if(userBookRepeat.getUserBook().getUser().getId().intValue() == userId.intValue()){
+            // 用户第一次分享才增加水滴
+            if(!userBookRepeat.getShare()){
+                // 标记已分享
+                this.updateUserBookRepeat(new UserBookRepeat(){
+                    @Override
+                    public Integer getId() {
+                        return userBookRepeat.getId();
+                    }
+
+                    @Override
+                    public Boolean getShare() {
+                        return true;
+                    }
+                });
+                // 记录明细 更新水滴余额
+                this.assetsUpdate(userBookRepeat.getUserBook().getUser().getId(),new BigDecimal(Configuration.property(Configuration.BONUS_INCREASE_BOOK_REPEAT_SHARE)),1,12,new HashMap(){{
+                    this.put("id",userBookRepeat.getId());
+                }});
+            }
+        }
+    }
+
+    /**
+     * 用户课程跟读分享
+     * @param userId
+     * @param courseRepeatId
+     */
+    public void userCourseRepeatShare(Integer userId, Integer courseRepeatId){
+        UserCourseRepeat userCourseRepeat = this.getUserCourseRepeat(courseRepeatId);
+        if(userCourseRepeat == null){
+            throw new KidbridgeSimpleException("未知的课程跟读信息");
+        }
+        // 如果该跟读是用户本人跟读的，则进入加水滴流程
+        if(userCourseRepeat.getUserCourse().getUser().getId().intValue() == userId.intValue()){
+            // 用户第一次分享才增加水滴
+            if(!userCourseRepeat.getShare()){
+                // 标记已分享
+                this.updateUserCourseRepeat(new UserCourseRepeat(){
+                    @Override
+                    public Integer getId() {
+                        return userCourseRepeat.getId();
+                    }
+
+                    @Override
+                    public Boolean getShare() {
+                        return true;
+                    }
+                });
+                // 记录明细 更新水滴余额
+                this.assetsUpdate(userCourseRepeat.getUserCourse().getUser().getId(),new BigDecimal(Configuration.property(Configuration.BONUS_INCREASE_COURSE_REPEAT_SHARE)),1,13,new HashMap(){{
+                    this.put("id",userCourseRepeat.getId());
+                }});
+            }
+        }
+
+    }
+
+    public void updateUserCourseRepeat(UserCourseRepeat userCourseRepeat){
+        this.sqlSessionTemplate.update(this.namespace + "updateCourseRepeat",userCourseRepeat);
     }
 
 

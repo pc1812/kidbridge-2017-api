@@ -64,7 +64,7 @@
         )
     </insert>
 
-    <!--用户是否已解锁了某个绘本-->
+    <!--用户是否已解锁了某个课程-->
     <select id="exist" resultType="java.lang.Integer">
         SELECT
             COUNT(*)

@@ -14,6 +14,7 @@ public class UserCourseRepeat implements Serializable {
     private Book book;
     private Integer like;
     private List segment;
+    private Boolean share;
     private Boolean delFlag;
     private Date createTime;
     private Date updateTime;
@@ -82,16 +83,26 @@ public class UserCourseRepeat implements Serializable {
         this.segment = segment;
     }
 
+    public Boolean getShare() {
+        return share;
+    }
+
+    public void setShare(Boolean share) {
+        this.share = share;
+    }
+
     @Override
     public String toString() {
         return "UserCourseRepeat{" +
                 "id=" + id +
                 ", userCourse=" + userCourse +
+                ", book=" + book +
+                ", like=" + like +
+                ", segment=" + segment +
+                ", share=" + share +
                 ", delFlag=" + delFlag +
                 ", createTime=" + createTime +
                 ", updateTime=" + updateTime +
                 '}';
     }
-
-
 }

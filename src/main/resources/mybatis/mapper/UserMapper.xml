@@ -971,7 +971,7 @@
             bill.del_flag = FALSE
             AND bill.user_id = #{_parameter}
             AND bill.fee_type = 1
-            AND bill.bill_type IN (7,8,9,10)
+            AND bill.bill_type IN (7,8,9,10,12,13)
     </select>
 
 </mapper>

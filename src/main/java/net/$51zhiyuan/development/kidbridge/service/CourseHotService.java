@@ -50,7 +50,7 @@ public class CourseHotService {
      * @param page
      * @return
      */
-    public List<Course> hot(PageRowBounds page){
-        return this.sqlSessionTemplate.selectList(this.namespace + "hot",new CourseHot(),page);
+    public List<Course> hot(Course param,PageRowBounds page){
+        return this.sqlSessionTemplate.selectList(this.namespace + "hot",param,page);
     }
 }

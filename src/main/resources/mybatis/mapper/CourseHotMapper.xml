@@ -18,9 +18,12 @@
             (SELECT COUNT(*) FROM `t_user_course` AS `userCourse` WHERE `userCourse`.`del_flag` = FALSE AND `userCourse`.`course_id` = `course`.`id`) AS `enter`,
             `course`.`limit`,
             (SELECT SUM(`cycle`) FROM `t_course_detail` AS `courseDetail` WHERE `courseDetail`.`del_flag` = FALSE AND `courseDetail`.`course_id` = `course`.`id`) AS `cycle`,
-            (IF((NOW() >= `course`.`start_time`),IF((DATE_ADD(`course`.`start_time`,INTERVAL (SELECT SUM(`cycle`) FROM `t_course_detail` AS `courseDetail` WHERE `courseDetail`.`del_flag` = FALSE AND `courseDetail`.`course_id` = `course`.`id`) DAY) >= NOW()),1,2),0)) AS `status`
+            (IF((NOW() >= `course`.`start_time`),IF((DATE_ADD(`course`.`start_time`,INTERVAL (SELECT SUM(`cycle`) FROM `t_course_detail` AS `courseDetail` WHERE `courseDetail`.`del_flag` = FALSE AND `courseDetail`.`course_id` = `course`.`id`) DAY) >= NOW()),1,2),0)) AS `status`,
+            `userCourse`.`id` IS NOT NULL AS `lock`
         FROM
             `t_course` AS `course`
+        LEFT JOIN
+            (SELECT * FROM `t_user_course` AS `temp` WHERE `temp`.`del_flag` = FALSE AND `temp`.`user_id` = #{user.id}) AS `userCourse` ON `userCourse`.`course_id` = `course`.`id`
         WHERE
             `course`.`del_flag` = FALSE AND `course`.`id` IN (SELECT `courseHot`.`course_id` FROM `t_course_hot` AS `courseHot` WHERE `courseHot`.`del_flag` = FALSE)
         ORDER BY

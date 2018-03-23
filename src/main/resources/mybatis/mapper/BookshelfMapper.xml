@@ -17,6 +17,7 @@
             <result property="price" column="book_price" />
             <result property="fit" column="book_fit" />
             <result property="tag" column="book_tag" typeHandler="net.$51zhiyuan.development.kidbridge.module.typehandler.JsonTypeHandler" />
+            <result property="lock" column="book_lock" />
         </collection>
     </resultMap>
 
@@ -31,13 +32,16 @@
             `book`.`icon` AS `book_icon`,
             `book`.`price` AS `book_price`,
             `book`.`fit` AS `book_fit`,
-            `book`.`tag` AS `book_tag`
+            `book`.`tag` AS `book_tag`,
+            `userBook`.`id` IS NOT NULL AS `book_lock`
         FROM
             `t_bookshelf` AS `bookshelf`
 		LEFT JOIN
 		    (SELECT * FROM `t_bookshelf_detail` AS `bookshelfDetail` WHERE `bookshelfDetail`.`del_flag` = FALSE ) AS `bookshelfDetail` ON `bookshelfDetail`.`bookshelf_id` = `bookshelf`.`id`
         LEFT JOIN
             (SELECT * FROM `t_book` AS `book` WHERE `book`.`del_flag` = FALSE ) AS `book` ON `book`.`id` = `bookshelfDetail`.`book_id`
+        LEFT JOIN
+            (SELECT * FROM `t_user_book` AS `temp` WHERE `temp`.`del_flag` = FALSE AND `temp`.`user_id` = #{user.id}) AS `userBook` ON `userBook`.`book_id` = `book`.`id`
         WHERE
             `bookshelf`.`del_flag` = FALSE AND `bookshelf`.`id` = #{id}
         ORDER BY

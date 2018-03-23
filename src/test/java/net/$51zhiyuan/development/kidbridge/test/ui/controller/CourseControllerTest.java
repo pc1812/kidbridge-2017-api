@@ -28,7 +28,7 @@ public class CourseControllerTest {
     private final String domain = "http://127.0.0.1:83/course";
     private final Logger logger = LogManager.getLogger(UserControllerTest.class);
 
-    private String userToken = "6c26be66efe641ddbddd0c5d7270ad55";
+    private String userToken = "6bac4d31f71d4467b0aa08f225355cdb";
 
     @Before
     public void setUp() {
@@ -62,7 +62,7 @@ public class CourseControllerTest {
         String api = "/hot/list";
         Map param = new HashMap();
         param.put("offset",0);
-        param.put("limit",2);
+        param.put("limit",20);
         String response = this.http.doPost(this.domain+api,this.userToken,param);
         this.logger.debug("request: " + this.kidbridgeObjectMapper.writeValueAsString(param));
         this.logger.debug("response: " + response);

@@ -121,8 +121,14 @@ public class CourseController {
     @RequestMapping("/hot/list")
     Message hot_list(@RequestBody Map<String,Object> param){
         Course course = new Course();
+        course.setUser(new User(){
+            @Override
+            public Integer getId() {
+                return (int)SecurityUtils.getSubject().getPrincipal();
+            }
+        });
         // 热门课程列表
-        List<Course> courseList = this.courseHotService.hot(new KidbridgePageRowBounds((Integer)param.get(Configuration.SYSTEM_PAGINATION_OFFSET),(Integer)param.get(Configuration.SYSTEM_PAGINATION_LIMIT)));
+        List<Course> courseList = this.courseHotService.hot(course,new KidbridgePageRowBounds((Integer)param.get(Configuration.SYSTEM_PAGINATION_OFFSET),(Integer)param.get(Configuration.SYSTEM_PAGINATION_LIMIT)));
         return new Message(courseList);
     }
 

@@ -16,6 +16,7 @@ public class Bookshelf implements Serializable {
     private Map cover;
     private Integer fit;
     private List tag;
+    private User user;
     private List<Book> bookList;
     private Boolean delFlag;
     private Date createTime;
@@ -101,6 +102,14 @@ public class Bookshelf implements Serializable {
         this.updateTime = updateTime;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     @Override
     public String toString() {
         return "Bookshelf{" +
@@ -110,6 +119,8 @@ public class Bookshelf implements Serializable {
                 ", cover=" + cover +
                 ", fit=" + fit +
                 ", tag=" + tag +
+                ", user=" + user +
+                ", bookList=" + bookList +
                 ", delFlag=" + delFlag +
                 ", createTime=" + createTime +
                 ", updateTime=" + updateTime +

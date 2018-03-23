@@ -23,6 +23,7 @@
         <Root level="ALL"/>
         <Logger name="net.$51zhiyuan.development.kidbridge" level="DEBUG">
             <AppenderRef ref="DEBUG_FILE"/>
+            <AppenderRef ref="CONSOLE"/>
         </Logger>
 <!--        <Logger name="net.$51zhiyuan.development.kidbridge" level="ERROR">
             <AppenderRef ref="ERROR_FILE"/>

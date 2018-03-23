@@ -159,7 +159,6 @@ public class BookController {
     @ResponseBody
     @RequestMapping("/search")
     Message search(@RequestBody Map<String,Object> param){
-        System.out.println("111");
         if(param.get("keyword") != null && !StringUtils.isBlank(param.get("keyword").toString())){
             // 记录搜索关键词
             this.searchRecordService.add(new SearchRecord(){

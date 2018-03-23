@@ -28,7 +28,7 @@ public class BookControllerTest {
     private final String domain = "http://127.0.0.1:83/book";
     private final Logger logger = LogManager.getLogger(UserControllerTest.class);
 
-    private String userToken = "14c8befeb1a941c191599f876c796089";
+    private String userToken = "c8deaab38b9640e589d6dd35fdc96375";
 
     @Before
     public void setUp() {
@@ -51,7 +51,7 @@ public class BookControllerTest {
     public void get() throws IOException, CertificateException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyManagementException, KeyStoreException {
         String api = "/get";
         Map param = new HashMap();
-        param.put("id",15);
+        param.put("id",62);
         String response = this.http.doPost(this.domain+api,this.userToken,param);
         this.logger.debug("request: " + this.kidbridgeObjectMapper.writeValueAsString(param));
         this.logger.debug("response: " + response);

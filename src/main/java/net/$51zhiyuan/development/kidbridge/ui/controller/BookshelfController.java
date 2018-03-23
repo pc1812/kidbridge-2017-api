@@ -5,6 +5,8 @@ import net.$51zhiyuan.development.kidbridge.module.KidbridgePageRowBounds;
 import net.$51zhiyuan.development.kidbridge.service.BookshelfService;
 import net.$51zhiyuan.development.kidbridge.ui.model.Bookshelf;
 import net.$51zhiyuan.development.kidbridge.ui.model.Message;
+import net.$51zhiyuan.development.kidbridge.ui.model.User;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,6 +39,17 @@ public class BookshelfController {
             @Override
             public Integer getId() {
                 return (int)param.get("id");
+            }
+
+            @Override
+            public User getUser() {
+                return new User(){
+                    @Override
+                    public Integer getId() {
+                        // 当前用户id
+                        return (int) SecurityUtils.getSubject().getPrincipal();
+                    }
+                };
             }
         });
         return new Message(bookshelf);

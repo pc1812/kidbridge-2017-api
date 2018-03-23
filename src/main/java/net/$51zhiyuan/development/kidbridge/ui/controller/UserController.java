@@ -380,7 +380,6 @@ public class UserController {
     @ResponseBody
     @RequestMapping("/course/book/repeat/token")
     Message course_repeat_token(@RequestBody Map<String,Object> param){
-        System.out.println("token param: " + param);
         String token = this.userService.getCourseRepeatToken((int)SecurityUtils.getSubject().getPrincipal(),(int)param.get("course"),(int)param.get("book"));
         return new Message(new HashMap(){{
             this.put("token",token); // 完成跟读发布时需携带此参数

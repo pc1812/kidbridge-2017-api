@@ -7,6 +7,7 @@ import org.apache.logging.log4j.Logger;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -32,6 +33,7 @@ public class MedalService {
      * 获取勋章列表
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public List<Medal> list(){
         return this.sqlSessionTemplate.selectList(this.namespace + "list",new Medal());
     }
@@ -51,6 +53,7 @@ public class MedalService {
      * @param bonus
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public Medal now(Integer bonus){
         return this.sqlSessionTemplate.selectOne(this.namespace + "now",bonus);
     }
@@ -60,6 +63,7 @@ public class MedalService {
      * @param bonus
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public Medal future(Integer bonus){
         return this.sqlSessionTemplate.selectOne(this.namespace + "future",bonus);
     }

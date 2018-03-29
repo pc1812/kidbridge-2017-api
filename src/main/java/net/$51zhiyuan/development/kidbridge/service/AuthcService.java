@@ -16,6 +16,7 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.security.KeyManagementException;
@@ -61,6 +62,7 @@ public class AuthcService {
      * @throws KeyManagementException
      * @throws KeyStoreException
      */
+    @Transactional(rollbackFor = Exception.class)
     public User authcLogin(String code, Integer type) throws CertificateException, UnrecoverableKeyException, NoSuchAlgorithmException, IOException, KeyManagementException, KeyStoreException {
         if(StringUtils.isBlank(code)){
             throw new KidbridgeSimpleException("未知的授权 ~");
@@ -110,6 +112,7 @@ public class AuthcService {
      * @throws KeyManagementException
      * @throws KeyStoreException
      */
+    @Transactional(rollbackFor = Exception.class)
     private String getAuthCode(String code,Integer type) throws CertificateException, UnrecoverableKeyException, NoSuchAlgorithmException, IOException, KeyManagementException, KeyStoreException {
         String authcCode;
         switch (type){
@@ -138,6 +141,7 @@ public class AuthcService {
      * @param authc
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public Integer save(Authc authc){
         return this.sqlSessionTemplate.insert(this.namespace + "save",authc);
     }
@@ -147,6 +151,7 @@ public class AuthcService {
      * @param param
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public Authc get(Authc param){
         return this.sqlSessionTemplate.selectOne(this.namespace + "get",param);
     }

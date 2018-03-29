@@ -7,6 +7,7 @@ import org.apache.logging.log4j.Logger;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 
@@ -32,6 +33,7 @@ public class RechargeService {
      * @param method
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public Integer add(String id, Integer userId, BigDecimal fee,Integer feeType,Integer method){
         return this.sqlSessionTemplate.insert(this.namespace + "add",new Recharge(){
             /**
@@ -100,6 +102,7 @@ public class RechargeService {
      * @param recharge
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public Integer update(Recharge recharge){
         return this.sqlSessionTemplate.update(this.namespace + "update",recharge);
     }
@@ -109,6 +112,7 @@ public class RechargeService {
      * @param id
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public Recharge get(String id){
         return this.sqlSessionTemplate.selectOne(this.namespace + "get",id);
     }

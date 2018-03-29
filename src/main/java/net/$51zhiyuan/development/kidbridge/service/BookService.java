@@ -67,6 +67,7 @@ public class BookService {
      * @param param
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public Book get(Book param){
         return this.sqlSessionTemplate.selectOne(this.namespace + "get",param);
     }
@@ -87,6 +88,7 @@ public class BookService {
      * @param page
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public List<Book> list(Object param, PageRowBounds page) {
         return this.sqlSessionTemplate.selectList(this.namespace + "list",param,page);
     }
@@ -97,6 +99,7 @@ public class BookService {
      * @param pageRowBounds
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public List<Book> search(String keyword, PageRowBounds pageRowBounds){
         return this.sqlSessionTemplate.selectList(this.namespace + "search",keyword,pageRowBounds);
     }
@@ -112,6 +115,7 @@ public class BookService {
      * @throws KeyManagementException
      * @throws KeyStoreException
      */
+    @Transactional(rollbackFor = Exception.class)
     public String getRichtext(String resKey) throws CertificateException, UnrecoverableKeyException, NoSuchAlgorithmException, IOException, KeyManagementException, KeyStoreException {
         String html = this.httpClient.doGet(String.format("http://%s/%s",Configuration.property(Configuration.QINIU_BUCKET_DOMAIN),resKey));
         return html;
@@ -122,6 +126,7 @@ public class BookService {
      * @param bookId
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public Book getAppreciation(Integer bookId){
         Book book = this.get(new Book(){
             @Override
@@ -172,6 +177,7 @@ public class BookService {
      * @param bookId
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     private Book getNameAndRepeatActiveTime(Integer bookId){
         return this.sqlSessionTemplate.selectOne(this.namespace + "getNameAndRepeatActiveTime",bookId);
     }
@@ -181,6 +187,7 @@ public class BookService {
      * @param bookId
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public Integer getRepeatActiveTime(Integer bookId){
         return this.sqlSessionTemplate.selectOne(this.namespace + "repeatActiveTime",bookId);
     }
@@ -191,6 +198,7 @@ public class BookService {
      * @param token
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public Book segment(Integer userId,String token){
         if(StringUtils.isBlank(token)){
             throw new KidbridgeSimpleException("非法的跟读会话 ~");
@@ -263,6 +271,7 @@ public class BookService {
      * @param bookCommentId
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     private BookComment getAppreciationComment(Integer bookCommentId){
         return this.sqlSessionTemplate.selectOne(this.namespace + "getAppreciationComment",bookCommentId);
     }
@@ -276,6 +285,7 @@ public class BookService {
      * @param audio
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public Integer insAppreciationComment(Integer userId,Integer bookId,String text,Map audio){
         // 内容校验
         if(StringUtils.isBlank(text) && audio == null){
@@ -333,6 +343,7 @@ public class BookService {
      * @param fee
      * @param bookId
      */
+    @Transactional(rollbackFor = Exception.class)
     public void reward(Integer userId, BigDecimal fee,Integer bookId){
         if(fee.compareTo(new BigDecimal("0")) <= 0){
             throw new KidbridgeSimpleException("请输入正确的打赏金额 ~");
@@ -374,6 +385,7 @@ public class BookService {
      * @param audio
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public Integer insAppreciationCommentReply(Integer userId,Integer bookId,Integer quote, String text,Map audio){
         if((StringUtils.isBlank(text) && audio == null) || quote == null){
             throw new KidbridgeSimpleException("非法的请求参数 ~");
@@ -444,6 +456,7 @@ public class BookService {
      * @param page
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public List<BookComment> getAppreciationCommentList(Integer bookId,PageRowBounds page){
         return this.sqlSessionTemplate.selectList(this.namespace + "getAppreciationCommentList",new HashMap(){{
             this.put("bookId",bookId);

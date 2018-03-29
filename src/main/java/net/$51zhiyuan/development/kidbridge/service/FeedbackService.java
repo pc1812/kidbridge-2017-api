@@ -7,6 +7,7 @@ import org.apache.logging.log4j.Logger;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -48,6 +49,7 @@ public class FeedbackService {
      * @param param
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public Integer add(Feedback param){
         return this.sqlSessionTemplate.insert(this.namespace + "add",param);
     }

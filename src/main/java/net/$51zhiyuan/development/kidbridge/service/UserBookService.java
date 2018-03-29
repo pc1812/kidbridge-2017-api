@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -30,6 +31,7 @@ public class UserBookService {
      * @param param
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public UserBook get(UserBook param){
         return this.sqlSessionTemplate.selectOne(this.namespace + "get",param);
     }
@@ -56,6 +58,7 @@ public class UserBookService {
      * @param free
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public Integer add(Integer userId, Integer bookId, Boolean free,Object option){
         return this.sqlSessionTemplate.insert(this.namespace + "add",new UserBook(){
             @Override
@@ -90,6 +93,7 @@ public class UserBookService {
         });
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public Integer add(Integer userId, Integer bookId, Boolean free){
         return this.add(userId, bookId, free,null);
     }
@@ -101,6 +105,7 @@ public class UserBookService {
      * @param pageRowBounds
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public List<Book> userBook(Integer userId,int free,PageRowBounds pageRowBounds){
         return this.sqlSessionTemplate.selectList(this.namespace + "userBook",new UserBook(){
             @Override
@@ -126,6 +131,7 @@ public class UserBookService {
      * @param bookId
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public Boolean exist(Integer userId,Integer bookId){
         return (((int)this.sqlSessionTemplate.selectOne(this.namespace + "exist",new UserBook(){
             @Override

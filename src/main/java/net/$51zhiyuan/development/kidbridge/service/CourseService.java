@@ -15,6 +15,7 @@ import org.apache.logging.log4j.Logger;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -62,6 +63,7 @@ public class CourseService {
      * 获取提前预习的课程
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public List<Map> getPreviewList(){
         return this.sqlSessionTemplate.selectList(this.namespace + "getPreviewList");
     }
@@ -71,6 +73,7 @@ public class CourseService {
      * @param param
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public Course get(Course param){
         return this.sqlSessionTemplate.selectOne(this.namespace + "get",param);
     }
@@ -91,6 +94,7 @@ public class CourseService {
      * @param page
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public List<Course> list(Object param, PageRowBounds page) {
         return this.sqlSessionTemplate.selectList(this.namespace + "list",param,page);
     }
@@ -111,6 +115,7 @@ public class CourseService {
      * @throws KeyManagementException
      * @throws KeyStoreException
      */
+    @Transactional(rollbackFor = Exception.class)
     public String getRichtext(String resKey) throws CertificateException, UnrecoverableKeyException, NoSuchAlgorithmException, IOException, KeyManagementException, KeyStoreException {
         String html = this.httpClient.doGet(String.format("http://%s/%s", Configuration.property(Configuration.QINIU_BUCKET_DOMAIN),resKey));
         return html;
@@ -121,6 +126,7 @@ public class CourseService {
      * @param courseId
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public Course getCourseBookList(Integer courseId){
         return this.sqlSessionTemplate.selectOne(this.namespace + "getCourseBookList",courseId);
     }
@@ -133,6 +139,7 @@ public class CourseService {
      * @throws APIRequestException
      * @throws JsonProcessingException
      */
+    @Transactional(rollbackFor = Exception.class)
     public void unlock(Integer userId,Integer courseId) throws APIConnectionException, APIRequestException, JsonProcessingException {
         if(this.userCourseService.exist(userId,courseId)){
             throw new KidbridgeSimpleException("已解锁该课程 ~");
@@ -185,6 +192,7 @@ public class CourseService {
      * @param fee
      * @param courseId
      */
+    @Transactional(rollbackFor = Exception.class)
     public void reward(Integer userId, BigDecimal fee,Integer courseId){
         if(fee.compareTo(new BigDecimal("0")) <= 0){
             throw new KidbridgeSimpleException("请输入正确的打赏金额 ~");
@@ -247,6 +255,7 @@ public class CourseService {
      * @param bookId
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public CourseDetail getCourseBookActiveTime(Integer courseId, Integer bookId){
         return this.sqlSessionTemplate.selectOne(this.namespace + "getCourseBookActiveTime",new CourseDetail(){
             @Override
@@ -277,6 +286,7 @@ public class CourseService {
      * @param date
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public List<UserCourseRepeat> getUserCourseSignSchedule(Integer userCourseId,String date) {
         try{
             DateUtils.parseDate(date,"yyyyMM");
@@ -296,6 +306,7 @@ public class CourseService {
      * @param page
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public List<Map> getTodaySignList(Integer courseId,String date,PageRowBounds page){
         if(!StringUtils.isBlank(date)){
             try{
@@ -318,6 +329,7 @@ public class CourseService {
      * @param audio
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public Integer insAppreciationComment(Integer userId,Integer courseId,String text,Map audio){
         if(StringUtils.isBlank(text) && audio == null){
             throw new KidbridgeSimpleException("未知的评论内容 ~");
@@ -372,6 +384,7 @@ public class CourseService {
      * @param courseCommentId
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public CourseComment getAppreciationComment(Integer courseCommentId){
         return this.sqlSessionTemplate.selectOne(this.namespace + "getAppreciationComment",courseCommentId);
     }
@@ -382,6 +395,7 @@ public class CourseService {
      * @param page
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public List<CourseComment> getAppreciationCommentList(Integer courseId,PageRowBounds page){
         return this.sqlSessionTemplate.selectList(this.namespace + "getAppreciationCommentList",new HashMap(){{
             this.put("courseId",courseId);
@@ -398,6 +412,7 @@ public class CourseService {
      * @param audio
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public Integer insAppreciationCommentReply(Integer userId,Integer courseId,Integer quote, String text,Map audio){
         if((StringUtils.isBlank(text) && audio == null) || quote == null){
             throw new KidbridgeSimpleException("非法的请求参数 ~");

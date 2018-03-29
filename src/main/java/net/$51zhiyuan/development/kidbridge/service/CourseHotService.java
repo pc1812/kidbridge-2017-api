@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -50,6 +51,7 @@ public class CourseHotService {
      * @param page
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public List<Course> hot(Course param,PageRowBounds page){
         return this.sqlSessionTemplate.selectList(this.namespace + "hot",param,page);
     }

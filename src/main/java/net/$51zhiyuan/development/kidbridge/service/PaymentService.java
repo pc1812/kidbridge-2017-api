@@ -172,6 +172,7 @@ public class PaymentService {
      * @throws ParseException
      * @throws JsonProcessingException
      */
+    @Transactional(rollbackFor = Exception.class)
     public String alipayPayment(Integer userId, BigDecimal fee) throws ParseException, JsonProcessingException {
         return this.alipayUnifiedorder(userId,"藤桥教育-余额充值",fee);
     }
@@ -193,6 +194,7 @@ public class PaymentService {
      * @throws KeyManagementException
      * @throws ParseException
      */
+    @Transactional(rollbackFor = Exception.class)
     public Map wechatPayment(Integer userId, BigDecimal fee, String spbillCreateIp) throws IOException, CertificateException, NoSuchAlgorithmException, UnrecoverableKeyException, ParserConfigurationException, TransformerException, SAXException, KeyStoreException, KeyManagementException, ParseException {
         String prepayId = this.wechatUnifiedorder(userId,"藤桥教育-余额充值", new BigDecimal(fee.toPlainString()).multiply(new BigDecimal("100")).intValue(), spbillCreateIp);
         Map<String,Object> param = new HashMap<>();
@@ -337,6 +339,7 @@ public class PaymentService {
      * @return
      * @throws ParseException
      */
+    @Transactional(rollbackFor = Exception.class)
     private synchronized Long getNextOrderId() {
         ValueOperations<String,Object> valueOperations = this.redisTemplate.opsForValue();
         long prefix = Integer.parseInt(new SimpleDateFormat("yyyyMMdd").format(new Date()));
@@ -351,6 +354,7 @@ public class PaymentService {
      * 获取微信支付成功回调地址
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     private String getWechatPaymentCallbackUrl() {
         String protocol = "http";
         String domain = Configuration.property(Configuration.DOMAIN);
@@ -370,6 +374,7 @@ public class PaymentService {
      * 获取支付宝支付成功回调地址
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     private String getAlipayPaymentCallbackUrl() {
         String protocol = "http";
         String domain = Configuration.property(Configuration.DOMAIN);
@@ -390,6 +395,7 @@ public class PaymentService {
      * @param param
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     private String getWechatPaymentSign(Map<String,Object> param){
         SortedMap<String, Object> sortedMap = new TreeMap<>(param);
         StringBuilder stringBuilder = new StringBuilder();
@@ -410,6 +416,7 @@ public class PaymentService {
      * @return
      * @throws AlipayApiException
      */
+    @Transactional(rollbackFor = Exception.class)
     private AlipayTradeQueryResponse alipayOrderQuery(String orderId) throws AlipayApiException {
         AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do",Configuration.property(Configuration.ALIPAY_APP_ID),Configuration.property(Configuration.ALIPAY_APP_PRIVATE_KEY),"json","UTF-8",Configuration.property(Configuration.ALIPAY_ALIPAY_PUBLIC_KEY),"RSA2");
         AlipayTradeQueryRequest request = new AlipayTradeQueryRequest();
@@ -434,6 +441,7 @@ public class PaymentService {
      * @throws KeyManagementException
      * @throws KeyStoreException
      */
+    @Transactional(rollbackFor = Exception.class)
     private Map wechatOrderQuery(String orderId) throws IOException, CertificateException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyManagementException, KeyStoreException {
         Map param = new HashMap();
         param.put("appid",Configuration.property(Configuration.WECHAT_APP_ID));

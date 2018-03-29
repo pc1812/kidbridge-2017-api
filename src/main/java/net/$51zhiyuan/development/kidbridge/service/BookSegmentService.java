@@ -7,6 +7,7 @@ import org.apache.logging.log4j.Logger;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -39,6 +40,7 @@ public class BookSegmentService {
      * @param param
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public List<BookSegment> list(BookSegment param){
         return this.sqlSessionTemplate.selectList(this.namespace + "list",param);
     }

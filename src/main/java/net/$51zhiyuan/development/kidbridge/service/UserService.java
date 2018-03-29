@@ -81,6 +81,7 @@ public class UserService {
      * @param password
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public User simpleLogin(String phone, String password){
         if(StringUtils.isBlank(phone)){
             throw new KidbridgeSimpleException("请输入手机号码");
@@ -103,6 +104,7 @@ public class UserService {
      * @param param
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public User get(User param){
         return this.sqlSessionTemplate.selectOne(this.namespace + "get",param);
     }
@@ -127,6 +129,7 @@ public class UserService {
      * @param phone
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public User login(String phone){
         return this.sqlSessionTemplate.selectOne(this.namespace + "login",phone);
     }
@@ -136,6 +139,7 @@ public class UserService {
      * @param id
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public User balance(Integer id){
         return this.sqlSessionTemplate.selectOne(this.namespace + "balance",id);
     }
@@ -145,6 +149,7 @@ public class UserService {
      * @param id
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public User bonus(Integer id){
         return this.sqlSessionTemplate.selectOne(this.namespace + "bonus",id);
     }
@@ -154,6 +159,7 @@ public class UserService {
      * @param id
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public Map info(Integer id){
         return this.sqlSessionTemplate.selectOne(this.namespace + "info",id);
     }
@@ -163,6 +169,7 @@ public class UserService {
      * @param param
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public Integer update(User param){
         return this.sqlSessionTemplate.update(this.namespace + "update",param);
     }
@@ -172,6 +179,7 @@ public class UserService {
      * @param userId
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public User outline(Integer userId){
        return this.sqlSessionTemplate.selectOne(this.namespace + "outline",userId);
     }
@@ -224,6 +232,7 @@ public class UserService {
      * @param userBookId
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public String getBookRepeatToken(Integer userId,Integer userBookId){
         // 通过用户要跟读的绘本ID，获取用户绘本信息
         UserBook userBook = this.userBookService.get(new UserBook() {
@@ -264,6 +273,7 @@ public class UserService {
      * @param bookId
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public String getCourseRepeatToken(Integer userId, Integer userCourseId, Integer bookId){
         // 获取绘本有效跟读时间
         Integer repeatActiveTime = this.bookService.getRepeatActiveTime(bookId);
@@ -491,6 +501,7 @@ public class UserService {
      * @param userId
      * @param userBookRepeatId
      */
+    @Transactional(rollbackFor = Exception.class)
     public void bookRepeatDelete(Integer userId, List userBookRepeatId){
          if(userBookRepeatId == null || userBookRepeatId.size() == 0){
              throw new KidbridgeSimpleException("非法的请求参数 ~");
@@ -508,6 +519,7 @@ public class UserService {
      * @param segment
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public Integer courseRepeat(Integer userCourseId, Integer bookId, List segment){
         UserCourseRepeat userCourseRepeat = new UserCourseRepeat(){
             @Override
@@ -545,6 +557,7 @@ public class UserService {
      * @param bookId
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public Integer courseRepeatExist(Integer userCourseId, Integer bookId){
         return this.sqlSessionTemplate.selectOne(this.namespace + "courseRepeatExist",new UserCourseRepeat(){
             @Override
@@ -579,6 +592,7 @@ public class UserService {
      * @param userBookId
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public Integer bookRepeatExist(Integer userBookId){
         return this.sqlSessionTemplate.selectOne(this.namespace + "bookRepeatExist",userBookId);
     }
@@ -588,6 +602,7 @@ public class UserService {
      * @param userBookRepeat
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public Integer updateUserBookRepeat(UserBookRepeat userBookRepeat){
         return this.sqlSessionTemplate.update(this.namespace + "updateUserBookRepeat",userBookRepeat);
     }
@@ -598,6 +613,7 @@ public class UserService {
      * @param page
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public List getUserBookRepeatList(Integer userId,PageRowBounds page){
         return this.sqlSessionTemplate.selectList(this.namespace + "getUserBookRepeatList", userId,page);
     }
@@ -607,6 +623,7 @@ public class UserService {
      * @param userBookRepeatId
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public UserBookRepeat getUserBookRepeat(Integer userBookRepeatId){
         UserBookRepeat userBookRepeat = this.sqlSessionTemplate.selectOne(this.namespace + "getUserBookRepeat",userBookRepeatId);
         if(userBookRepeat == null){
@@ -620,6 +637,7 @@ public class UserService {
      * @param userCourseepeatId
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public UserCourseRepeat getUserCourseRepeat(Integer userCourseepeatId){
         UserCourseRepeat userCourseRepeat = this.sqlSessionTemplate.selectOne(this.namespace + "getUserCourseRepeat",userCourseepeatId);
         if(userCourseRepeat == null){
@@ -633,6 +651,7 @@ public class UserService {
      * @param userBookRepeatId
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public Integer getUserBookRepeatLikeCount(Integer userBookRepeatId){
         return this.sqlSessionTemplate.selectOne(this.namespace + "getUserBookRepeatLikeCount",userBookRepeatId);
     }
@@ -642,6 +661,7 @@ public class UserService {
      * @param userCourseRepeatId
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public Integer getUserCourseRepeatLikeCount(Integer userCourseRepeatId){
         return this.sqlSessionTemplate.selectOne(this.namespace + "getUserCourseRepeatLikeCount",userCourseRepeatId);
     }
@@ -652,6 +672,7 @@ public class UserService {
      * @param userBookRepeatId
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public Integer insUserBookRepeatLike(Integer userId, Integer userBookRepeatId){
         UserBookRepeat userBookRepeat = this.getUserBookRepeat(userBookRepeatId);
         if(userBookRepeat == null){
@@ -704,6 +725,7 @@ public class UserService {
      * @param userCourseRepeatId
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public Integer insUserCourseRepeatLike(Integer userId, Integer userCourseRepeatId){
         UserCourseRepeat userCourseRepeat = this.getUserCourseRepeat(userCourseRepeatId);
         if(userCourseRepeat == null){
@@ -757,6 +779,7 @@ public class UserService {
      * @param userCourseRepeatId
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public UserCourseRepeatLike userCourseRepeatLikeExist(Integer userId,Integer userCourseRepeatId ){
         return this.sqlSessionTemplate.selectOne(this.namespace + "userCourseRepeatLikeExist",new UserCourseRepeatLike(){
             @Override
@@ -787,6 +810,7 @@ public class UserService {
      * @param userBookRepeatId
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public UserBookRepeatLike userBookRepeatLikeExist(Integer userId,Integer userBookRepeatId ){
         return this.sqlSessionTemplate.selectOne(this.namespace + "userBookRepeatLikeExist",new UserBookRepeatLike(){
             @Override
@@ -817,6 +841,7 @@ public class UserService {
      * @param page
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public List getUserBookRepeatRank(Integer bookId,PageRowBounds page){
         return this.sqlSessionTemplate.selectList(this.namespace + "getUserBookRepeatRank",bookId,page);
     }
@@ -826,6 +851,7 @@ public class UserService {
      * @param userBookRepeatLike
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public Integer updateUserBookRepeatLike(UserBookRepeatLike userBookRepeatLike){
         return this.sqlSessionTemplate.update(this.namespace + "updateUserBookRepeatLike",userBookRepeatLike);
     }
@@ -835,6 +861,7 @@ public class UserService {
      * @param userCourseRepeatLike
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public Integer updateUserCourseRepeatLike(UserCourseRepeatLike userCourseRepeatLike){
         return this.sqlSessionTemplate.update(this.namespace + "updateUserCourseRepeatLike",userCourseRepeatLike);
     }
@@ -845,6 +872,7 @@ public class UserService {
      * @param page
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public List getUserBookRepeatCommentList(Integer userBookRepeatId,PageRowBounds page){
         return this.sqlSessionTemplate.selectList(this.namespace + "getUserBookRepeatCommentList",new HashMap(){{
             this.put("userBookRepeatId",userBookRepeatId);
@@ -858,6 +886,7 @@ public class UserService {
      * @param page
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public List getUserCourseRepeatCommentList(Integer userCourseRepeatId,PageRowBounds page){
         return this.sqlSessionTemplate.selectList(this.namespace + "getUserCourseRepeatCommentList",new HashMap(){{
             this.put("userCourseRepeatId",userCourseRepeatId);
@@ -875,6 +904,7 @@ public class UserService {
      * @param userId
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public List getTeacherComment(Integer userId){
         return this.sqlSessionTemplate.selectList(this.namespace + "teacherComment",userId);
     }
@@ -884,6 +914,7 @@ public class UserService {
      * @param userBookRepeatCommentId
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public UserBookRepeatComment getUserBookRepeatComment(Integer userBookRepeatCommentId){
         return this.sqlSessionTemplate.selectOne(this.namespace + "getUserBookRepeatComment",userBookRepeatCommentId);
     }
@@ -898,6 +929,7 @@ public class UserService {
      * @throws APIRequestException
      * @throws JsonProcessingException
      */
+    @Transactional(rollbackFor = Exception.class)
     public void insUserBookRepeatComment(Integer userId,Integer userBookRepeatId,String text,Map audio) throws APIConnectionException, APIRequestException, JsonProcessingException {
         if (StringUtils.isBlank(text) && audio == null) {
             throw new KidbridgeSimpleException("未知的评论内容 ~");
@@ -965,6 +997,7 @@ public class UserService {
      * @param audio
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public Integer insUserBookRepeatCommentReply(Integer userId,Integer userBookRepeatId,Integer quote, String text,Map audio){
         if((StringUtils.isBlank(text) && audio == null) || quote == null){
             throw new KidbridgeSimpleException("非法的请求参数 ~");
@@ -1034,6 +1067,7 @@ public class UserService {
      * @throws APIRequestException
      * @throws JsonProcessingException
      */
+    @Transactional(rollbackFor = Exception.class)
     public void insUserCourseRepeatComment(Integer userId,Integer userCourseRepeatId,String text,Map audio) throws APIConnectionException, APIRequestException, JsonProcessingException {
         if(StringUtils.isBlank(text) && audio == null){
             throw new KidbridgeSimpleException("未知的评论内容 ~");
@@ -1097,6 +1131,7 @@ public class UserService {
      * @param userCourseRepeatCommentId
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public UserCourseRepeatComment getUserCourseRepeatComment(Integer userCourseRepeatCommentId){
         return this.sqlSessionTemplate.selectOne(this.namespace + "getUserCourseRepeatComment",userCourseRepeatCommentId);
     }
@@ -1105,6 +1140,7 @@ public class UserService {
      * 获取用户成就水滴
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public Integer getAchievementBonus(Integer userId){
         return this.sqlSessionTemplate.selectOne(this.namespace + "getAchievementBonus",userId);
     }
@@ -1118,6 +1154,7 @@ public class UserService {
      * @param audio
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public Integer insUserCourseRepeatCommentReply(Integer userId,Integer userCourseRepeatId,Integer quote, String text,Map audio){
         if((StringUtils.isBlank(text) && audio == null) || quote == null){
             throw new KidbridgeSimpleException("非法的请求参数 ~");
@@ -1184,6 +1221,7 @@ public class UserService {
      * @throws KeyManagementException
      * @throws KeyStoreException
      */
+    @Transactional(rollbackFor = Exception.class)
     public synchronized void registerVerification(String phone) throws CertificateException, UnrecoverableKeyException, NoSuchAlgorithmException, IOException, KeyManagementException, KeyStoreException {
         User user = this.get(new User(){
             @Override
@@ -1207,6 +1245,7 @@ public class UserService {
      * @throws KeyManagementException
      * @throws KeyStoreException
      */
+    @Transactional(rollbackFor = Exception.class)
     public synchronized void updatePasswordVerification(String phone) throws CertificateException, UnrecoverableKeyException, NoSuchAlgorithmException, IOException, KeyManagementException, KeyStoreException {
         User user = this.get(new User(){
             @Override
@@ -1226,6 +1265,7 @@ public class UserService {
      * @param head
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public Integer updateHead(Integer userId, String head){
         if(StringUtils.isBlank(head)){
             throw new KidbridgeSimpleException("头像信息为空 ~");
@@ -1249,6 +1289,7 @@ public class UserService {
      * @param nickname
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public Integer updateNickname(Integer userId,String nickname){
         if(StringUtils.isBlank(nickname)){
             throw new KidbridgeSimpleException("昵称信息为空 ~");
@@ -1272,6 +1313,7 @@ public class UserService {
      * @param signature
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public Integer updateSignature(Integer userId, String signature){
         return this.update(new User(){
             @Override
@@ -1295,6 +1337,7 @@ public class UserService {
      * @param street
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public Integer updateReceiving(Integer userId,String contact,String phone,String region,String street){
         if(StringUtils.isBlank(contact)){
             throw new KidbridgeSimpleException("联系人信息为空 ~");
@@ -1342,6 +1385,7 @@ public class UserService {
      * @param birthday
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public Integer updateBirthday(Integer userId,String birthday){
         if(StringUtils.isBlank(birthday)){
             throw new KidbridgeSimpleException("生日信息为空 ~");
@@ -1372,6 +1416,7 @@ public class UserService {
      * @param code
      * @param password
      */
+    @Transactional(rollbackFor = Exception.class)
     public void updatePassword(String phone,String code,String password){
         if(StringUtils.isBlank(phone)){
             throw new KidbridgeSimpleException("请输入用户手机号码 ~");
@@ -1482,6 +1527,7 @@ public class UserService {
      * @param pageRowBounds
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public List getUserCourseRepeatList(Integer userId, PageRowBounds pageRowBounds){
         return this.sqlSessionTemplate.selectList(this.namespace + "getUserCourseRepeatList",userId,pageRowBounds);
     }
@@ -1492,10 +1538,12 @@ public class UserService {
      * @param pageRowBounds
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public List getUserCourseBookRepeatList(Integer userCourseId, PageRowBounds pageRowBounds){
         return this.sqlSessionTemplate.selectList(this.namespace + "getUserCourseBookRepeatList",userCourseId,pageRowBounds);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public void assetsUpdate(Integer userId, BigDecimal fee, Integer feeType,Integer billType){
         this.assetsUpdate(userId, fee, feeType, billType,new HashMap());
     }
@@ -1622,6 +1670,7 @@ public class UserService {
      * @param fee
      * @param userBookReoeatId
      */
+    @Transactional(rollbackFor = Exception.class)
     public void userBookRepeatReward(Integer userId, BigDecimal fee,Integer userBookReoeatId){
         if(fee.compareTo(new BigDecimal("0")) <= 0){
             throw new KidbridgeSimpleException("请输入正确的打赏金额 ~");
@@ -1648,6 +1697,7 @@ public class UserService {
      * @param fee
      * @param userCourseRepeatId
      */
+    @Transactional(rollbackFor = Exception.class)
     public void userCourseRepeatReward(Integer userId, BigDecimal fee,Integer userCourseRepeatId){
         if(fee.compareTo(new BigDecimal("0")) <= 0){
             throw new KidbridgeSimpleException("请输入正确的打赏金额 ~");
@@ -1673,6 +1723,7 @@ public class UserService {
      * @param userId
      * @param bookRepeatId
      */
+    @Transactional(rollbackFor = Exception.class)
     public void userBookRepeatShare(Integer userId, Integer bookRepeatId){
         UserBookRepeat userBookRepeat = this.getUserBookRepeat(bookRepeatId);
         if(userBookRepeat == null){
@@ -1707,6 +1758,7 @@ public class UserService {
      * @param userId
      * @param courseRepeatId
      */
+    @Transactional(rollbackFor = Exception.class)
     public void userCourseRepeatShare(Integer userId, Integer courseRepeatId){
         UserCourseRepeat userCourseRepeat = this.getUserCourseRepeat(courseRepeatId);
         if(userCourseRepeat == null){
@@ -1737,6 +1789,7 @@ public class UserService {
 
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public void updateUserCourseRepeat(UserCourseRepeat userCourseRepeat){
         this.sqlSessionTemplate.update(this.namespace + "updateCourseRepeat",userCourseRepeat);
     }

@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Created by hkhl.cn on 2018/2/10.
@@ -23,6 +24,7 @@ public class VersionService {
     @Autowired
     private SqlSessionTemplate sqlSessionTemplate;
 
+    @Transactional(rollbackFor = Exception.class)
     public Version check(String device){
         if(!(device.toLowerCase().equals("ios") || device.toLowerCase().equals("android"))){
             throw new KidbridgeSimpleException("未知的终端设备 ~");
@@ -30,6 +32,7 @@ public class VersionService {
         return this.lastVersion(device.equals("ios") ? 1 : 0);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public Version lastVersion(Integer device){
         return this.sqlSessionTemplate.selectOne(this.namespace + "lastVersion",new Version().setDevice(device));
     }

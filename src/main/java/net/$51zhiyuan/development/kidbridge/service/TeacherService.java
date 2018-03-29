@@ -7,6 +7,7 @@ import org.apache.logging.log4j.Logger;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +30,7 @@ public class TeacherService {
      * @param param
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public Teacher get(Teacher param){
         return this.sqlSessionTemplate.selectOne(this.namespace + "get",param);
     }
@@ -40,6 +42,7 @@ public class TeacherService {
      * @param page
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public List course(Integer userId,Integer status, PageRowBounds page){
         return this.sqlSessionTemplate.selectList(this.namespace + "course",new HashMap(){{
             this.put("userId",userId);

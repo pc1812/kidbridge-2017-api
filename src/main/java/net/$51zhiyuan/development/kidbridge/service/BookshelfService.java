@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -30,6 +31,7 @@ public class BookshelfService {
      * @param param
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public Bookshelf get(Bookshelf param){
         return this.sqlSessionTemplate.selectOne(this.namespace + "get",param);
     }
@@ -54,6 +56,7 @@ public class BookshelfService {
      * @param page
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public List<Bookshelf> hot(PageRowBounds page){
         return this.sqlSessionTemplate.selectList(this.namespace + "hot",new Bookshelf(),page);
     }
@@ -63,6 +66,7 @@ public class BookshelfService {
      * @param page
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public List<Bookshelf> recommend(PageRowBounds page){
         return this.sqlSessionTemplate.selectList(this.namespace + "recommend",new Bookshelf(),page);
     }

@@ -40,6 +40,7 @@ public class IOSIAPRechargeService {
      * @param id
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public IOSIAPRecharge get(String id){
         return this.sqlSessionTemplate.selectOne(this.namespace + "get",id);
     }
@@ -48,7 +49,7 @@ public class IOSIAPRechargeService {
      * 保存支付记录
      * @param iosiapRecharge
      */
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void save(IOSIAPRecharge iosiapRecharge){
         this.sqlSessionTemplate.insert(this.namespace + "save",iosiapRecharge);
     }

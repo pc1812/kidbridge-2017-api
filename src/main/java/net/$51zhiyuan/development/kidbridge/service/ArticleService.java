@@ -7,6 +7,7 @@ import org.apache.logging.log4j.Logger;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -28,6 +29,7 @@ public class ArticleService {
      * @param param
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public Article get(Article param){
         return this.sqlSessionTemplate.selectOne(this.namespace + "get",param);
     }

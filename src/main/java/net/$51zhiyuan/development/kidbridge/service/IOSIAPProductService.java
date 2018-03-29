@@ -60,6 +60,7 @@ public class IOSIAPProductService {
      * 获取价格档次列表
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public List<IOSIAPProduct> list(){
         return this.sqlSessionTemplate.selectList(this.namespace + "list",new Article());
     }
@@ -75,7 +76,7 @@ public class IOSIAPProductService {
      * @throws KeyManagementException
      * @throws KeyStoreException
      */
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public synchronized void validate(Integer userId,String receiptData) throws IOException, CertificateException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyManagementException, KeyStoreException {
         if(StringUtils.isBlank(receiptData)){
             throw new KidbridgeSystemException("未知的支付凭证");

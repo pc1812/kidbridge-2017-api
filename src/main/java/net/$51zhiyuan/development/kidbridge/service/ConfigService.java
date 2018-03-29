@@ -7,6 +7,7 @@ import org.apache.logging.log4j.Logger;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 数据库表config配置信息
@@ -23,6 +24,7 @@ public class ConfigService {
     @Autowired
     private SqlSessionTemplate sqlSessionTemplate;
 
+    @Transactional(rollbackFor = Exception.class)
     public String get(String key){
         // 根据参数键取出对应参数信息
         Config config = this.sqlSessionTemplate.selectOne(this.namespace + "get",key);

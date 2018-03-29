@@ -7,6 +7,7 @@ import org.apache.logging.log4j.Logger;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -46,6 +47,7 @@ public class BillService {
      * @param page
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public List<Bill> list(Object param, PageRowBounds page) {
         return this.sqlSessionTemplate.selectList(this.namespace + "list",param,page);
     }
@@ -55,6 +57,7 @@ public class BillService {
      * @param param
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public Integer add(Bill param){
         return this.sqlSessionTemplate.insert(this.namespace + "add",param);
     }

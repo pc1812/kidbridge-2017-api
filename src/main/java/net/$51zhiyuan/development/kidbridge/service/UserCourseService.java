@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -30,6 +31,7 @@ public class UserCourseService {
      * @param param
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public UserCourse get(UserCourse param){
         return this.sqlSessionTemplate.selectOne(this.namespace + "get",param);
     }
@@ -39,6 +41,7 @@ public class UserCourseService {
      * @param courseId
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public List<UserCourse> get(Integer courseId){
         return this.sqlSessionTemplate.selectList(this.namespace + "get",new UserCourse(){
             @Override
@@ -75,6 +78,7 @@ public class UserCourseService {
      * @param page
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public List<Course> userCourse(Integer userId,Integer status,PageRowBounds page){
         return this.sqlSessionTemplate.selectList(this.namespace + "userCourse",new UserCourse(){
             @Override
@@ -105,6 +109,7 @@ public class UserCourseService {
      * @param courseId
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public Boolean exist(Integer userId,Integer courseId){
         return (((int)this.sqlSessionTemplate.selectOne(this.namespace + "exist",new UserCourse(){
             @Override
@@ -134,6 +139,7 @@ public class UserCourseService {
      * @param courseId
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public Integer add(Integer userId,Integer courseId){
         return this.sqlSessionTemplate.insert(this.namespace + "add",new UserCourse(){
             @Override

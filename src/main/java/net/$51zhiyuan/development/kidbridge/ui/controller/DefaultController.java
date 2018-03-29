@@ -15,6 +15,6 @@ public class DefaultController {
     @ResponseBody
     @RequestMapping(value = "/")
     Object index(){
-        return new Message("1.0.0");
+        return new Message("1.2.0");
     }
 }

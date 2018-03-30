@@ -110,6 +110,7 @@
                 AND `course`.`fit` = #{fit}
             </if>
         ORDER BY
+            `course`.`sort` DESC,
             `course`.`create_time` DESC
     </select>
 

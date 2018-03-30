@@ -28,6 +28,7 @@ public class Course implements Serializable {
     private List tag;
     private List<CourseDetail> courseDetailList;
     private String richText;
+    private Integer sort;
     private Boolean delFlag;
     private Date createTime;
     private Date updateTime;
@@ -200,13 +201,24 @@ public class Course implements Serializable {
         this.richText = richText;
     }
 
+    public Integer getSort() {
+        return sort;
+    }
+
+    public void setSort(Integer sort) {
+        this.sort = sort;
+    }
+
     @Override
     public String toString() {
         return "Course{" +
                 "id=" + id +
+                ", copyright=" + copyright +
                 ", teacher=" + teacher +
+                ", user=" + user +
+                ", lock=" + lock +
                 ", name='" + name + '\'' +
-                ", icon='" + icon + '\'' +
+                ", icon=" + icon +
                 ", fit=" + fit +
                 ", enter=" + enter +
                 ", limit=" + limit +
@@ -214,8 +226,11 @@ public class Course implements Serializable {
                 ", price=" + price +
                 ", outline='" + outline + '\'' +
                 ", cycle=" + cycle +
+                ", status=" + status +
                 ", tag=" + tag +
                 ", courseDetailList=" + courseDetailList +
+                ", richText='" + richText + '\'' +
+                ", sort=" + sort +
                 ", delFlag=" + delFlag +
                 ", createTime=" + createTime +
                 ", updateTime=" + updateTime +

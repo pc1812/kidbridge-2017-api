@@ -262,7 +262,7 @@ public class UserService {
         userBookRepeat.setId(this.bookRepeatExist(userBook.getId()));
         userBookRepeat.setUserBook(userBook);
         // redis临时存储跟读信息
-        this.redisTemplate.opsForValue().set(String.format("%s:%s", Configuration.SYSTEM_REPEAT_NAMESPACE,token),userBookRepeat,repeatActiveTime + repeatActiveTime / 2,TimeUnit.SECONDS);
+        this.redisTemplate.opsForValue().set(String.format("%s:%s", Configuration.SYSTEM_REPEAT_NAMESPACE,token),userBookRepeat,repeatActiveTime * 2,TimeUnit.SECONDS);
         return token;
     }
 
@@ -331,7 +331,7 @@ public class UserService {
         userCourseRepeat.setUserCourse(userCourse);
         userCourseRepeat.setBook(book);
         // redis临时存储跟读信息
-        this.redisTemplate.opsForValue().set(String.format("%s:%s", Configuration.SYSTEM_REPEAT_NAMESPACE,token),userCourseRepeat,repeatActiveTime + repeatActiveTime / 2,TimeUnit.SECONDS);
+        this.redisTemplate.opsForValue().set(String.format("%s:%s", Configuration.SYSTEM_REPEAT_NAMESPACE,token),userCourseRepeat,repeatActiveTime * 2,TimeUnit.SECONDS);
         return token;
     }
 

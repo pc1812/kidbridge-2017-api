@@ -1,8 +1,8 @@
 CREATE DATABASE  IF NOT EXISTS `kidbridge` /*!40100 DEFAULT CHARACTER SET utf8mb4 */;
 USE `kidbridge`;
--- MySQL dump 10.13  Distrib 5.7.17, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 5.7.12, for Win64 (x86_64)
 --
--- Host: 127.0.0.1    Database: kidbridge
+-- Host: dev.51zhiyuan.net    Database: kidbridge
 -- ------------------------------------------------------
 -- Server version	5.7.18-log
 
@@ -94,7 +94,7 @@ CREATE TABLE `t_bill` (
   PRIMARY KEY (`id`),
   KEY `FK_USER_ID_BILL_USER_ID_idx` (`user_id`),
   CONSTRAINT `FK_BILL_USER_ID` FOREIGN KEY (`user_id`) REFERENCES `t_user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=1319 DEFAULT CHARSET=utf8mb4 COMMENT='费用明细表';
+) ENGINE=InnoDB AUTO_INCREMENT=1682 DEFAULT CHARSET=utf8mb4 COMMENT='费用明细表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -143,7 +143,7 @@ CREATE TABLE `t_book_comment` (
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=636 DEFAULT CHARSET=utf8mb4 COMMENT='绘本评论';
+) ENGINE=InnoDB AUTO_INCREMENT=638 DEFAULT CHARSET=utf8mb4 COMMENT='绘本评论';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -161,7 +161,7 @@ CREATE TABLE `t_book_copyright` (
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COMMENT='绘本所属版权';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='绘本所属版权';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -183,7 +183,7 @@ CREATE TABLE `t_book_segment` (
   PRIMARY KEY (`id`),
   KEY `FK_BOOK_SEGMENT_BOOK_ID_idx` (`book_id`),
   CONSTRAINT `FK_BOOK_SEGMENT_BOOK_ID` FOREIGN KEY (`book_id`) REFERENCES `t_book` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=7660 DEFAULT CHARSET=utf8mb4 COMMENT='绘本段落信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=7669 DEFAULT CHARSET=utf8mb4 COMMENT='绘本段落信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -296,13 +296,14 @@ CREATE TABLE `t_course` (
   `outline` varchar(2048) NOT NULL DEFAULT '' COMMENT '课程概要',
   `tag` varchar(128) NOT NULL DEFAULT '' COMMENT '课程关键词，json数据格式\n[\n  "hello",\n  "world"\n]',
   `rich_text` varchar(64) NOT NULL DEFAULT '' COMMENT '富文本',
+  `sort` int(11) DEFAULT '0',
   `del_flag` tinyint(1) NOT NULL DEFAULT '0',
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `FK_COURSE_TEACHER_ID_idx` (`teacher_id`),
   CONSTRAINT `FK_COURSE_TEACHER_ID` FOREIGN KEY (`teacher_id`) REFERENCES `t_teacher` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8mb4 COMMENT='课程信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=utf8mb4 COMMENT='课程信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -322,7 +323,7 @@ CREATE TABLE `t_course_comment` (
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=141 DEFAULT CHARSET=utf8mb4 COMMENT='课程评论';
+) ENGINE=InnoDB AUTO_INCREMENT=143 DEFAULT CHARSET=utf8mb4 COMMENT='课程评论';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -359,7 +360,7 @@ CREATE TABLE `t_course_detail` (
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=841 DEFAULT CHARSET=utf8mb4 COMMENT='课程详情，与绘本关联';
+) ENGINE=InnoDB AUTO_INCREMENT=910 DEFAULT CHARSET=utf8mb4 COMMENT='课程详情，与绘本关联';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -396,7 +397,7 @@ CREATE TABLE `t_feedback` (
   PRIMARY KEY (`id`),
   KEY `FK_FEEDBACK_USER_ID_idx` (`user_id`),
   CONSTRAINT `FK_FEEDBACK_USER_ID` FOREIGN KEY (`user_id`) REFERENCES `t_user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COMMENT='意见反馈';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='意见反馈';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -417,7 +418,7 @@ CREATE TABLE `t_ios_iap_product` (
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `product_UNIQUE` (`product`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -496,7 +497,7 @@ CREATE TABLE `t_search_record` (
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=165 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=197 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -545,7 +546,7 @@ CREATE TABLE `t_user` (
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`,`phone`)
-) ENGINE=InnoDB AUTO_INCREMENT=96 DEFAULT CHARSET=utf8mb4 COMMENT='用户信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=98 DEFAULT CHARSET=utf8mb4 COMMENT='用户信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -569,7 +570,7 @@ CREATE TABLE `t_user_book` (
   KEY `FK_USER_BOOK_BOOK_ID_idx` (`book_id`),
   CONSTRAINT `FK_USER_BOOK_BOOK_ID` FOREIGN KEY (`book_id`) REFERENCES `t_book` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `FK_USER_BOOK_USER_ID` FOREIGN KEY (`user_id`) REFERENCES `t_user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=653 DEFAULT CHARSET=utf8mb4 COMMENT='我的绘本';
+) ENGINE=InnoDB AUTO_INCREMENT=805 DEFAULT CHARSET=utf8mb4 COMMENT='我的绘本';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -590,7 +591,7 @@ CREATE TABLE `t_user_book_repeat` (
   PRIMARY KEY (`id`),
   KEY `FK_USER_BOOK_REPEAT_USER_BOOK_ID_idx` (`user_book_id`),
   CONSTRAINT `FK_USER_BOOK_REPEAT_USER_BOOK_ID` FOREIGN KEY (`user_book_id`) REFERENCES `t_user_book` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=93 DEFAULT CHARSET=utf8mb4 COMMENT='用户绘本跟读';
+) ENGINE=InnoDB AUTO_INCREMENT=153 DEFAULT CHARSET=utf8mb4 COMMENT='用户绘本跟读';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -614,7 +615,7 @@ CREATE TABLE `t_user_book_repeat_comment` (
   KEY `FK_USER_BOOK_REPEAT_COMMENT_USER_BOOK_REPEAT_ID_idx` (`user_book_repeat_id`),
   CONSTRAINT `FK_USER_BOOK_REPEAT_COMMENT_USER_BOOK_REPEAT_ID` FOREIGN KEY (`user_book_repeat_id`) REFERENCES `t_user_book_repeat` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `FK_USER_BOOK_REPEAT_COMMENT_USER_ID` FOREIGN KEY (`user_id`) REFERENCES `t_user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=219 DEFAULT CHARSET=utf8mb4 COMMENT='用户跟读评论表';
+) ENGINE=InnoDB AUTO_INCREMENT=241 DEFAULT CHARSET=utf8mb4 COMMENT='用户跟读评论表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -636,7 +637,7 @@ CREATE TABLE `t_user_book_repeat_like` (
   KEY `FK_USER_BOOK_REPEAT_LIKE_USER_ID_idx` (`user_id`),
   CONSTRAINT `FK_USER_BOOK_REPEAT_LIKE_USER_BOOK_REPEAT_ID` FOREIGN KEY (`user_book_repeat_id`) REFERENCES `t_user_book_repeat` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `FK_USER_BOOK_REPEAT_LIKE_USER_ID` FOREIGN KEY (`user_id`) REFERENCES `t_user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=148 DEFAULT CHARSET=utf8mb4 COMMENT='用户跟读点赞信息';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户跟读点赞信息';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -658,7 +659,7 @@ CREATE TABLE `t_user_course` (
   KEY `FK_USER_COURSE_COURSE_ID_idx` (`course_id`),
   CONSTRAINT `FK_USER_COURSE_COURSE_ID` FOREIGN KEY (`course_id`) REFERENCES `t_course` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `FK_USER_COURSE_USER_ID` FOREIGN KEY (`user_id`) REFERENCES `t_user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=82 DEFAULT CHARSET=utf8mb4 COMMENT='我的课程';
+) ENGINE=InnoDB AUTO_INCREMENT=180 DEFAULT CHARSET=utf8mb4 COMMENT='我的课程';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -680,7 +681,7 @@ CREATE TABLE `t_user_course_repeat` (
   PRIMARY KEY (`id`),
   KEY `FK_USER_COURSE_REPEAT_USER_COURSE_ID_idx` (`user_course_id`),
   CONSTRAINT `FK_USER_COURSE_REPEAT_USER_COURSE_ID` FOREIGN KEY (`user_course_id`) REFERENCES `t_user_course` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=85 DEFAULT CHARSET=utf8mb4 COMMENT='用户课程跟读';
+) ENGINE=InnoDB AUTO_INCREMENT=110 DEFAULT CHARSET=utf8mb4 COMMENT='用户课程跟读';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -700,7 +701,7 @@ CREATE TABLE `t_user_course_repeat_comment` (
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=140 DEFAULT CHARSET=utf8mb4 COMMENT='用户课程跟读评论';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户课程跟读评论';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -718,7 +719,7 @@ CREATE TABLE `t_user_course_repeat_like` (
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8mb4 COMMENT='用户课程跟读点赞';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户课程跟读点赞';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -737,7 +738,7 @@ CREATE TABLE `t_version` (
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -769,4 +770,4 @@ CREATE TABLE `t_whirligig` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-03-17 13:55:34
+-- Dump completed on 2018-03-30 11:25:54
